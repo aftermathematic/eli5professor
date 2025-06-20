@@ -1,0 +1,32 @@
+2025-06-13 10:11:42,793 - eli5bot-monitor - INFO - Starting monitoring run
+2025-06-13 10:11:42,796 - eli5bot-monitor - ERROR - Error checking process: [WinError 2] The system cannot find the file specified
+2025-06-13 10:11:42,796 - eli5bot-monitor - CRITICAL - ALERT: Bot process is not running!
+2025-06-13 10:11:42,797 - eli5bot-monitor - INFO - Metrics: {'responses_generated': 0, 'errors': 0, 'warnings': 0, 'avg_response_time': 0, 'rate_limit_hits': 0, 'openai_failures': 0, 'local_model_fallbacks': 0}
+2025-06-13 10:11:42,798 - eli5bot-monitor - INFO - Bot status: healthy
+2025-06-13 10:11:42,798 - eli5bot-monitor - INFO - Monitoring run completed
+2025-06-13 10:12:37,257 - eli5bot-monitor - INFO - Starting monitoring run
+2025-06-13 10:12:37,260 - eli5bot-monitor - ERROR - Error checking process: [WinError 2] The system cannot find the file specified
+2025-06-13 10:12:37,260 - eli5bot-monitor - CRITICAL - ALERT: Bot process is not running!
+2025-06-13 10:12:37,262 - eli5bot-monitor - INFO - Metrics: {'responses_generated': 0, 'errors': 0, 'warnings': 0, 'avg_response_time': 0, 'rate_limit_hits': 0, 'openai_failures': 0, 'local_model_fallbacks': 0}
+2025-06-13 10:12:37,263 - eli5bot-monitor - INFO - Bot status: healthy
+2025-06-13 10:12:37,263 - eli5bot-monitor - INFO - Monitoring run completed
+2025-06-13 10:13:37,693 - eli5bot-monitor - INFO - Starting monitoring run
+2025-06-13 10:13:37,695 - eli5bot-monitor - ERROR - Error checking process: [WinError 2] The system cannot find the file specified
+2025-06-13 10:13:37,696 - eli5bot-monitor - CRITICAL - ALERT: Bot process is not running!
+2025-06-13 10:13:37,697 - eli5bot-monitor - INFO - Metrics: {'responses_generated': 0, 'errors': 0, 'warnings': 0, 'avg_response_time': 0, 'rate_limit_hits': 0, 'openai_failures': 0, 'local_model_fallbacks': 0}
+2025-06-13 10:13:37,697 - eli5bot-monitor - INFO - Bot status: healthy
+2025-06-13 10:13:37,698 - eli5bot-monitor - INFO - Monitoring run completed
+2025-06-13 10:20:28,221 - eli5bot-monitor - INFO - Starting monitoring run
+2025-06-13 10:20:28,376 - eli5bot-monitor - WARNING - Bot process is not running!
+2025-06-13 10:20:28,377 - eli5bot-monitor - CRITICAL - ALERT: Bot process is not running!
+2025-06-13 10:20:28,377 - eli5bot-monitor - INFO - Disk space on C:\: 590.22 GB remaining
+2025-06-13 10:20:28,388 - eli5bot-monitor - INFO - Metrics: {'responses_generated': 0, 'errors': 0, 'warnings': 0, 'avg_response_time': 0, 'rate_limit_hits': 0, 'openai_failures': 0, 'local_model_fallbacks': 0}
+2025-06-13 10:20:28,389 - eli5bot-monitor - INFO - Bot status: healthy
+2025-06-13 10:20:28,389 - eli5bot-monitor - INFO - Monitoring run completed
+2025-06-13 10:20:37,476 - eli5bot-monitor - INFO - Starting monitoring run
+2025-06-13 10:20:37,600 - eli5bot-monitor - WARNING - Bot process is not running!
+2025-06-13 10:20:37,600 - eli5bot-monitor - CRITICAL - ALERT: Bot process is not running!
+2025-06-13 10:20:37,600 - eli5bot-monitor - INFO - Disk space on C:\: 590.22 GB remaining
+2025-06-13 10:20:37,601 - eli5bot-monitor - INFO - Metrics: {'responses_generated': 0, 'errors': 0, 'warnings': 0, 'avg_response_time': 0, 'rate_limit_hits': 0, 'openai_failures': 0, 'local_model_fallbacks': 0}
+2025-06-13 10:20:37,601 - eli5bot-monitor - INFO - Bot status: healthy
+2025-06-13 10:20:37,602 - eli5bot-monitor - INFO - Monitoring run completed
