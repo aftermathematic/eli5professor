@@ -56,7 +56,7 @@ The codebase has been significantly refactored to follow MLOps best practices:
 
 5. **Type Hints**: Added type annotations for better code quality and IDE support.
 
-6. **Configuration Management**: Environment variables with defaults for all configurable parameters.
+6. **Configuration Management**: YAML configuration files and environment variables with defaults for all configurable parameters.
 
 7. **Rate Limit Handling**: Improved handling of Twitter API rate limits with intelligent backoff.
 
@@ -70,7 +70,9 @@ The codebase has been significantly refactored to follow MLOps best practices:
 - Twitter Developer Account with API credentials
 - OpenAI API key (optional if using local model)
 
-### Environment Variables
+### Configuration
+
+#### Environment Variables
 
 Create a `.env` file in the project root with the following variables:
 
@@ -86,13 +88,57 @@ TWITTER_USER_ID=your_twitter_user_id
 
 # OpenAI configuration (optional if using local model)
 OPENAI_API_KEY=your_openai_api_key
-OPENAI_MODEL=gpt-3.5-turbo
-
-# Bot configuration
-LAST_SEEN_FILE=last_seen_id.txt
-POLL_INTERVAL=900
-USE_LOCAL_MODEL_FALLBACK=true
 ```
+
+#### YAML Configuration
+
+The bot uses YAML configuration files for non-sensitive settings. The default configuration file is located at `config/config.yml`:
+
+```yaml
+# ELI5 Twitter Bot Configuration
+
+# Environment settings
+environment: dev  # Options: dev, prod
+
+# Twitter API settings
+twitter:
+  poll_interval: 960  # 16 minutes by default
+  max_tweet_length: 280
+
+# OpenAI settings
+openai:
+  model: gpt-3.5-turbo
+  temperature: 0.8
+  max_tokens: 500
+  use_local_model_fallback: true
+
+# Dataset settings
+dataset:
+  eli5_dataset_path: data/eli5_dataset.csv
+  examples_dataset_path: data/dataset.csv
+  num_examples: 3  # Number of examples to use for few-shot learning
+
+# Prompt settings
+prompts:
+  eli5_prompt_template: |
+    # Template for generating ELI5 explanations
+    # {subject} will be replaced with the actual subject
+  
+  system_prompt: |
+    # System prompt for the OpenAI API
+
+# Logging settings
+logging:
+  log_file: eli5bot.log
+  level: INFO  # Options: DEBUG, INFO, WARNING, ERROR, CRITICAL
+  format: "%(asctime)s - %(name)s - %(levelname)s - %(message)s"
+
+# File paths
+paths:
+  last_seen_file: last_seen_id.txt
+```
+
+You can modify these settings to customize the bot's behavior without changing the code.
 
 ### Installation
 
@@ -116,15 +162,20 @@ USE_LOCAL_MODEL_FALLBACK=true
 
 ## MLOps Roadmap
 
+Current MLOps implementations:
+
+1. **Containerization**: ✅ Application packaged in Docker for consistent deployment.
+2. **Infrastructure as Code**: ✅ Cloud resources defined with Terraform.
+3. **Data Versioning**: ✅ Datasets tracked with DVC and stored in S3.
+4. **Configuration Management**: ✅ YAML configuration files for externalizing parameters.
+
 Future MLOps improvements planned for this project:
 
-1. **Containerization**: Package the application in Docker for consistent deployment.
-2. **CI/CD Pipeline**: Implement automated testing and deployment with GitHub Actions.
-3. **Infrastructure as Code**: Define cloud resources with Terraform.
-4. **Monitoring**: Add Prometheus/Grafana for real-time monitoring.
-5. **Model Versioning**: Track model versions and performance with MLflow.
-6. **A/B Testing**: Implement framework for testing different prompt strategies.
-7. **Automated Retraining**: Set up pipeline for fine-tuning models based on feedback.
+1. **CI/CD Pipeline**: Implement automated testing and deployment with GitHub Actions.
+2. **Monitoring**: Add Prometheus/Grafana for real-time monitoring.
+3. **Model Versioning**: Track model versions and performance with MLflow.
+4. **A/B Testing**: Implement framework for testing different prompt strategies.
+5. **Automated Retraining**: Set up pipeline for fine-tuning models based on feedback.
 
 ---
 

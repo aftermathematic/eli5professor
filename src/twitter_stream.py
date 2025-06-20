@@ -13,58 +13,104 @@ import openai
 import csv
 import datetime
 import random
+import yaml
+import os.path
 from typing import Optional, Dict, Any, Union, List, Tuple
 from dotenv import load_dotenv
 from model_loader import get_model, get_tokenizer
 import torch
 
+# Load environment variables from .env file
+load_dotenv()
+
+# Configuration Loader
+class ConfigLoader:
+    """Class to load configuration from YAML file."""
+    @staticmethod
+    def load_config(config_path: str = "config/config.yml") -> Dict[str, Any]:
+        """Load configuration from YAML file."""
+        try:
+            with open(config_path, 'r') as f:
+                config = yaml.safe_load(f)
+            return config
+        except Exception as e:
+            print(f"Error loading configuration from {config_path}: {e}")
+            print("Using default configuration")
+            return {}
+
+# Load configuration
+config_data = ConfigLoader.load_config()
+
 # Configure logging
+logging_config = config_data.get('logging', {})
 logging.basicConfig(
-    level=logging.INFO,
-    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
+    level=getattr(logging, logging_config.get('level', 'INFO')),
+    format=logging_config.get('format', '%(asctime)s - %(name)s - %(levelname)s - %(message)s'),
     handlers=[
-        logging.FileHandler("eli5bot.log"),
+        logging.FileHandler(logging_config.get('log_file', 'eli5bot.log')),
         logging.StreamHandler()
     ]
 )
 logger = logging.getLogger("eli5bot")
 
-# Load environment variables from .env file
-load_dotenv()
-
 # Configuration
 class Config:
     """Configuration class for the Twitter ELI5 bot."""
-    # Twitter API credentials
-    API_KEY = os.getenv('TWITTER_API_KEY')
-    API_SECRET = os.getenv('TWITTER_API_SECRET')
-    ACCESS_TOKEN = os.getenv('TWITTER_ACCESS_TOKEN')
-    ACCESS_TOKEN_SECRET = os.getenv('TWITTER_ACCESS_TOKEN_SECRET')
-    BEARER_TOKEN = os.getenv('TWITTER_BEARER_TOKEN')
-    TWITTER_ACCOUNT_HANDLE = os.getenv('TWITTER_ACCOUNT_HANDLE')
-    TWITTER_USER_ID = os.getenv('TWITTER_USER_ID')
-    
-    # OpenAI configuration
-    OPENAI_API_KEY = os.getenv('OPENAI_API_KEY')
-    OPENAI_MODEL = os.getenv('OPENAI_MODEL', 'gpt-3.5-turbo')
-    
-    # Bot configuration
-    LAST_SEEN_FILE = os.getenv('LAST_SEEN_FILE', 'last_seen_id.txt')
-    POLL_INTERVAL = int(os.getenv('POLL_INTERVAL', '960'))  # 16 minutes by default
-    MAX_TWEET_LENGTH = 280
-    USE_LOCAL_MODEL_FALLBACK = os.getenv('USE_LOCAL_MODEL_FALLBACK', 'true').lower() == 'true'
-    DATASET_PATH = os.getenv('DATASET_PATH', 'data/dataset.csv')
-    NUM_EXAMPLES = int(os.getenv('NUM_EXAMPLES', '3'))  # Number of examples to use for few-shot learning
-    
-    # Prompt configuration
-    ELI5_PROMPT_TEMPLATE = """
+    def __init__(self, config_data: Dict[str, Any]):
+        self.config_data = config_data
+        
+        # Twitter API credentials
+        self.API_KEY = os.getenv('TWITTER_API_KEY')
+        self.API_SECRET = os.getenv('TWITTER_API_SECRET')
+        self.ACCESS_TOKEN = os.getenv('TWITTER_ACCESS_TOKEN')
+        self.ACCESS_TOKEN_SECRET = os.getenv('TWITTER_ACCESS_TOKEN_SECRET')
+        self.BEARER_TOKEN = os.getenv('TWITTER_BEARER_TOKEN')
+        self.TWITTER_ACCOUNT_HANDLE = os.getenv('TWITTER_ACCOUNT_HANDLE')
+        self.TWITTER_USER_ID = os.getenv('TWITTER_USER_ID')
+        
+        # OpenAI configuration
+        self.OPENAI_API_KEY = os.getenv('OPENAI_API_KEY')
+        self.OPENAI_MODEL = self._get_config('openai.model', os.getenv('OPENAI_MODEL', 'gpt-3.5-turbo'))
+        
+        # Bot configuration
+        self.LAST_SEEN_FILE = self._get_config('paths.last_seen_file', os.getenv('LAST_SEEN_FILE', 'last_seen_id.txt'))
+        self.POLL_INTERVAL = int(self._get_config('twitter.poll_interval', os.getenv('POLL_INTERVAL', '960')))
+        self.MAX_TWEET_LENGTH = int(self._get_config('twitter.max_tweet_length', 280))
+        self.USE_LOCAL_MODEL_FALLBACK = self._get_config('openai.use_local_model_fallback', 
+                                                        os.getenv('USE_LOCAL_MODEL_FALLBACK', 'true').lower() == 'true')
+        
+        # Dataset configuration
+        self.DATASET_PATH = self._get_config('dataset.examples_dataset_path', 
+                                            os.getenv('DATASET_PATH', 'data/dataset.csv'))
+        self.ELI5_DATASET_PATH = self._get_config('dataset.eli5_dataset_path', 'data/eli5_dataset.csv')
+        self.NUM_EXAMPLES = int(self._get_config('dataset.num_examples', 
+                                                os.getenv('NUM_EXAMPLES', '3')))
+        
+        # Prompt configuration
+        self.ELI5_PROMPT_TEMPLATE = self._get_config('prompts.eli5_prompt_template', """
 You're a passive-aggressive assistant that explains things in a condescending way to someone with no background knowledge. Be sarcastic, use a mocking tone, and make the person feel slightly bad for not knowing this already.
 
 Explain the following like I'm 5 years old, but with a passive-aggressive tone. Keep it under 260 characters:
 {subject}
 
 End your response with '#ELI5'
-"""
+""")
+        
+        self.SYSTEM_PROMPT = self._get_config('prompts.system_prompt', 
+                                             "You are a passive-aggressive assistant that explains concepts in a condescending way to 5-year-olds. Your responses should be sarcastic, slightly mocking, and make the person feel a bit bad for not knowing this already. Keep responses under 260 characters and end with #ELI5.")
+    
+    def _get_config(self, key_path: str, default: Any) -> Any:
+        """Get a configuration value from the YAML config using dot notation."""
+        keys = key_path.split('.')
+        value = self.config_data
+        
+        for key in keys:
+            if isinstance(value, dict) and key in value:
+                value = value[key]
+            else:
+                return default
+        
+        return value
 
 class DatasetLoader:
     """Class to load and process the dataset of examples."""
@@ -245,7 +291,7 @@ class LLMClient:
         
         # Create messages array with system prompt and examples
         messages = [
-            {"role": "system", "content": "You are a passive-aggressive assistant that explains concepts in a condescending way to 5-year-olds. Your responses should be sarcastic, slightly mocking, and make the person feel a bit bad for not knowing this already. Keep responses under 260 characters and end with #ELI5."}
+            {"role": "system", "content": self.config.SYSTEM_PROMPT}
         ]
         
         # Add examples as conversation pairs
@@ -260,8 +306,8 @@ class LLMClient:
         response = client.chat.completions.create(
             model=self.config.OPENAI_MODEL,
             messages=messages,
-            max_tokens=500,
-            temperature=0.8
+            max_tokens=self.config._get_config('openai.max_tokens', 500),
+            temperature=self.config._get_config('openai.temperature', 0.8)
         )
         explanation = response.choices[0].message.content.strip()
         return self._format_for_twitter(explanation)
@@ -423,13 +469,13 @@ class ELI5Bot:
     """Main bot class that orchestrates the Twitter ELI5 bot."""
     def __init__(self):
         """Initialize the bot with all required components."""
-        self.config = Config()
+        self.config = Config(config_data)
         self.twitter_client = TwitterClient(self.config)
         self.llm_client = LLMClient(self.config)
         self.id_manager = LastSeenIdManager(self.config)
         self.tweet_processor = TweetProcessor(self.config)
         self.rate_limit_handler = RateLimitHandler()
-        self.dataset_logger = DatasetLogger()
+        self.dataset_logger = DatasetLogger(self.config.ELI5_DATASET_PATH)
         
         # Log the number of examples loaded from the dataset
         logger.info(f"Loaded {len(self.llm_client.dataset_loader.examples)} examples from dataset for few-shot learning")

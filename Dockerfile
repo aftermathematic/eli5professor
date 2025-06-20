@@ -6,8 +6,9 @@ WORKDIR /app
 COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
-# Copy source code
+# Copy source code and configuration
 COPY src/ ./src/
+COPY config/ ./config/
 COPY .env .
 
 # Create volume mount point for persistent data
