@@ -10,6 +10,9 @@ import time
 import logging
 import tweepy
 import openai
+import csv
+import datetime
+import random
 from typing import Optional, Dict, Any, Union, List, Tuple
 from dotenv import load_dotenv
 from model_loader import get_model, get_tokenizer
@@ -50,15 +53,49 @@ class Config:
     POLL_INTERVAL = int(os.getenv('POLL_INTERVAL', '960'))  # 16 minutes by default
     MAX_TWEET_LENGTH = 280
     USE_LOCAL_MODEL_FALLBACK = os.getenv('USE_LOCAL_MODEL_FALLBACK', 'true').lower() == 'true'
+    DATASET_PATH = os.getenv('DATASET_PATH', 'data/dataset.csv')
+    NUM_EXAMPLES = int(os.getenv('NUM_EXAMPLES', '3'))  # Number of examples to use for few-shot learning
     
     # Prompt configuration
     ELI5_PROMPT_TEMPLATE = """
-You're a funny, helpful assistant that explains things in the simplest, silliest way possible — like you're talking to someone with no background knowledge. Be clear, funny, and very simple, but still informative.
-Explain the following like I'm completely clueless and 5 years old. Avoid jargon, use analogies, and make it fun:
+You're a passive-aggressive assistant that explains things in a condescending way to someone with no background knowledge. Be sarcastic, use a mocking tone, and make the person feel slightly bad for not knowing this already.
+
+Explain the following like I'm 5 years old, but with a passive-aggressive tone. Keep it under 260 characters:
 {subject}
+
 End your response with '#ELI5'
-The response must not exceed 280 characters (including spaces, punctuation, and hashtags)
 """
+
+class DatasetLoader:
+    """Class to load and process the dataset of examples."""
+    def __init__(self, dataset_path: str = "data/dataset.csv"):
+        self.dataset_path = dataset_path
+        self.examples = []
+        self._load_dataset()
+        logger.info(f"Dataset loader initialized with {len(self.examples)} examples from {dataset_path}")
+    
+    def _load_dataset(self) -> None:
+        """Load examples from the dataset file."""
+        try:
+            with open(self.dataset_path, 'r', newline='', encoding='utf-8') as f:
+                reader = csv.DictReader(f)
+                for row in reader:
+                    if 'term' in row and 'explanation' in row:
+                        self.examples.append({
+                            'term': row['term'],
+                            'explanation': row['explanation']
+                        })
+        except Exception as e:
+            logger.error(f"Error loading dataset: {e}")
+    
+    def get_random_examples(self, num_examples: int = 3) -> List[Dict[str, str]]:
+        """Get a random selection of examples from the dataset."""
+        if not self.examples:
+            return []
+        
+        # Return random examples, but no more than what's available
+        num_to_return = min(num_examples, len(self.examples))
+        return random.sample(self.examples, num_to_return)
 
 # Initialize clients
 class TwitterClient:
@@ -156,6 +193,10 @@ class LLMClient:
             except Exception as e:
                 logger.error(f"Failed to load local model: {e}")
                 self.use_local_model_fallback = False
+        
+        # Load dataset examples
+        self.dataset_loader = DatasetLoader(config.DATASET_PATH)
+        logger.info(f"Loaded {len(self.dataset_loader.examples)} examples from dataset")
     
     def _create_openai_client(self):
         """Create a fresh OpenAI client for each request."""
@@ -195,13 +236,30 @@ class LLMClient:
         return f"Sorry, I couldn't explain '{subject}' right now. Try again later! #ELI5"
     
     def _generate_with_openai(self, prompt: str) -> str:
-        """Generate response using OpenAI API."""
+        """Generate response using OpenAI API with few-shot examples."""
         # Create a fresh client for this request
         client = self._create_openai_client()
         
+        # Get random examples from the dataset
+        examples = self.dataset_loader.get_random_examples(self.config.NUM_EXAMPLES)
+        
+        # Create messages array with system prompt and examples
+        messages = [
+            {"role": "system", "content": "You are a passive-aggressive assistant that explains concepts in a condescending way to 5-year-olds. Your responses should be sarcastic, slightly mocking, and make the person feel a bit bad for not knowing this already. Keep responses under 260 characters and end with #ELI5."}
+        ]
+        
+        # Add examples as conversation pairs
+        for example in examples:
+            messages.append({"role": "user", "content": f"Explain {example['term']} like I'm 5 years old"})
+            messages.append({"role": "assistant", "content": example['explanation']})
+        
+        # Add the current request
+        messages.append({"role": "user", "content": prompt})
+        
+        # Generate response
         response = client.chat.completions.create(
             model=self.config.OPENAI_MODEL,
-            messages=[{"role": "user", "content": prompt}],
+            messages=messages,
             max_tokens=500,
             temperature=0.8
         )
@@ -289,6 +347,37 @@ class TweetProcessor:
         subject = re.split(r'[@#]', subject)[0].strip()
         return subject if subject else None
 
+class DatasetLogger:
+    """Class to log tweet data to a dataset file."""
+    def __init__(self, dataset_path: str = "data/eli5_dataset.csv"):
+        self.dataset_path = dataset_path
+        logger.info(f"Dataset logger initialized with path: {dataset_path}")
+    
+    def log_interaction(self, tweet_id: Union[int, str], subject: str, response: str) -> None:
+        """
+        Log a tweet interaction to the dataset file.
+        
+        Args:
+            tweet_id: The ID of the tweet
+            subject: The extracted subject from the tweet
+            response: The generated ELI5 response
+        """
+        try:
+            timestamp = datetime.datetime.now().isoformat()
+            
+            # Escape any commas, quotes, or newlines in the text fields
+            subject_escaped = subject.replace('"', '""')
+            response_escaped = response.replace('"', '""')
+            
+            # Write to CSV file
+            with open(self.dataset_path, 'a', newline='', encoding='utf-8') as f:
+                writer = csv.writer(f, quoting=csv.QUOTE_MINIMAL)
+                writer.writerow([timestamp, tweet_id, subject_escaped, response_escaped])
+            
+            logger.info(f"Logged interaction for tweet {tweet_id} to dataset")
+        except Exception as e:
+            logger.error(f"Error logging to dataset: {e}")
+
 class RateLimitHandler:
     """Class to handle rate limit exceptions."""
     @staticmethod
@@ -340,6 +429,10 @@ class ELI5Bot:
         self.id_manager = LastSeenIdManager(self.config)
         self.tweet_processor = TweetProcessor(self.config)
         self.rate_limit_handler = RateLimitHandler()
+        self.dataset_logger = DatasetLogger()
+        
+        # Log the number of examples loaded from the dataset
+        logger.info(f"Loaded {len(self.llm_client.dataset_loader.examples)} examples from dataset for few-shot learning")
         
         # Validate required configuration
         self._validate_config()
@@ -395,6 +488,9 @@ class ELI5Bot:
 
                     # Log the generated response
                     logger.info(f"Generated response for tweet {tweet.id}: {response}")
+                    
+                    # Log to dataset
+                    self.dataset_logger.log_interaction(tweet.id, subject, response)
                     
                     # Post reply with a fresh connection
                     self.twitter_client.post_reply(response, tweet.id)
