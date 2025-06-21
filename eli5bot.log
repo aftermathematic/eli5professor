@@ -2767,3 +2767,17 @@ Too Many Requests
 2025-06-20 17:46:10,573 - eli5bot - INFO - Still waiting... 900 seconds remaining until next check
 2025-06-20 17:46:40,574 - eli5bot - INFO - Still waiting... 870 seconds remaining until next check
 2025-06-20 17:47:10,575 - eli5bot - INFO - Still waiting... 840 seconds remaining until next check
+2025-06-21 10:32:22,389 - eli5bot - INFO - Twitter client initialized
+2025-06-21 10:32:22,390 - eli5bot - INFO - OpenAI API key found
+2025-06-21 10:32:22,391 - eli5bot - INFO - Local model loaded for fallback
+2025-06-21 10:32:22,400 - eli5bot - INFO - Dataset loader initialized with 31 examples from data/dataset.csv
+2025-06-21 10:32:22,400 - eli5bot - INFO - Loaded 31 examples from dataset
+2025-06-21 10:32:22,401 - eli5bot - INFO - Dataset logger initialized with path: data/eli5_dataset.csv
+2025-06-21 10:32:22,401 - eli5bot - INFO - Loaded 31 examples from dataset for few-shot learning
+2025-06-21 10:32:22,401 - eli5bot - INFO - ELI5 Bot initialized successfully
+2025-06-21 10:32:22,401 - eli5bot - INFO - Starting Twitter ELI5 bot...
+2025-06-21 10:32:22,966 - eli5bot - INFO - No new mentions found
+2025-06-21 10:32:22,967 - eli5bot - INFO - Waiting 960 seconds for new mentions...
+2025-06-21 10:32:52,958 - eli5bot - INFO - Still waiting... 930 seconds remaining until next check
+2025-06-21 10:33:22,958 - eli5bot - INFO - Still waiting... 900 seconds remaining until next check
+2025-06-21 10:33:52,959 - eli5bot - INFO - Still waiting... 870 seconds remaining until next check

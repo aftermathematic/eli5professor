@@ -19,4 +19,4 @@ ENV PYTHONUNBUFFERED=1
 ENV LAST_SEEN_FILE=/app/data/last_seen_id.txt
 
 # Run the bot
-CMD ["python", "src/twitter_stream.py"]
+CMD ["python", "src/main.py"]

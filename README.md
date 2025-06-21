@@ -155,7 +155,7 @@ You can modify these settings to customize the bot's behavior without changing t
 
 3. Run the bot:
    ```bash
-   python src/twitter_stream.py
+   python src/main.py
    ```
 
 ---
