@@ -3131,3 +3131,10 @@ Too Many Requests
 2025-06-21 11:39:54,050 - eli5api - INFO - Dataset logger initialized with path: data/eli5_dataset.csv
 2025-06-21 11:40:03,526 - eli5api - ERROR - Error generating explanation: 'examples'
 2025-06-21 11:40:11,704 - eli5api - ERROR - Error generating explanation: 'examples'
+2025-06-21 11:46:46,288 - eli5api - INFO - OpenAI API key found
+2025-06-21 11:46:46,288 - eli5api - INFO - Local model loaded for fallback
+2025-06-21 11:46:46,289 - eli5api - INFO - Dataset loader initialized with 31 examples from data/dataset.csv
+2025-06-21 11:46:46,289 - eli5api - INFO - Loaded 31 examples from dataset
+2025-06-21 11:46:46,291 - eli5api - INFO - Dataset logger initialized with path: data/eli5_dataset.csv
+2025-06-21 11:46:58,951 - httpx - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2025-06-21 11:46:58,955 - eli5api - INFO - Logged interaction for subject 'Star Wars' to dataset
