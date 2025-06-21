@@ -2781,3 +2781,353 @@ Too Many Requests
 2025-06-21 10:32:52,958 - eli5bot - INFO - Still waiting... 930 seconds remaining until next check
 2025-06-21 10:33:22,958 - eli5bot - INFO - Still waiting... 900 seconds remaining until next check
 2025-06-21 10:33:52,959 - eli5bot - INFO - Still waiting... 870 seconds remaining until next check
+2025-06-21 10:43:04,375 - eli5api - INFO - OpenAI API key found
+2025-06-21 10:43:04,376 - eli5api - INFO - Local model loaded for fallback
+2025-06-21 10:43:04,377 - eli5api - INFO - Dataset loader initialized with 31 examples from data/dataset.csv
+2025-06-21 10:43:04,378 - eli5api - INFO - Loaded 31 examples from dataset
+2025-06-21 10:50:32,327 - eli5api - INFO - OpenAI API key found
+2025-06-21 10:50:32,329 - eli5api - INFO - Local model loaded for fallback
+2025-06-21 10:50:32,341 - eli5api - INFO - Dataset loader initialized with 31 examples from data/dataset.csv
+2025-06-21 10:50:32,341 - eli5api - INFO - Loaded 31 examples from dataset
+2025-06-21 10:50:51,398 - httpx - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2025-06-21 10:51:01,154 - httpx - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2025-06-21 10:53:20,353 - eli5api - INFO - OpenAI API key found
+2025-06-21 10:53:20,354 - eli5api - INFO - Local model loaded for fallback
+2025-06-21 10:53:20,354 - eli5api - INFO - Dataset loader initialized with 31 examples from data/dataset.csv
+2025-06-21 10:53:20,354 - eli5api - INFO - Loaded 31 examples from dataset
+2025-06-21 10:53:20,356 - eli5api - INFO - Dataset logger initialized with path: data/eli5_dataset.csv
+2025-06-21 10:53:49,011 - httpx - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2025-06-21 10:53:49,018 - eli5api - INFO - Logged interaction for subject 'machine learning' to dataset
+2025-06-21 10:55:13,669 - eli5api - INFO - OpenAI API key found
+2025-06-21 10:55:13,669 - eli5api - INFO - Local model loaded for fallback
+2025-06-21 10:55:13,670 - eli5api - INFO - Dataset loader initialized with 31 examples from data/dataset.csv
+2025-06-21 10:55:13,670 - eli5api - INFO - Loaded 31 examples from dataset
+2025-06-21 10:55:13,673 - eli5api - INFO - Dataset logger initialized with path: data/eli5_dataset.csv
+2025-06-21 10:59:08,390 - httpx - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2025-06-21 10:59:08,392 - eli5api - INFO - Logged interaction for subject 'artificial intelligence' to dataset
+2025-06-21 11:01:44,441 - httpx - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2025-06-21 11:01:44,443 - eli5api - INFO - Logged interaction for subject 'quantum computing' to dataset
+2025-06-21 11:02:05,974 - httpx - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2025-06-21 11:02:05,976 - eli5api - INFO - Logged interaction for subject 'blockchain' to dataset
+2025-06-21 11:05:58,539 - httpx - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2025-06-21 11:05:58,540 - eli5api - INFO - Logged interaction for subject 'quantum physics' to dataset
+2025-06-21 11:07:25,120 - httpx - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2025-06-21 11:07:25,123 - eli5api - INFO - Logged interaction for subject 'quantum physics' to dataset
+2025-06-21 11:07:43,820 - httpx - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2025-06-21 11:07:43,826 - eli5api - INFO - Logged interaction for subject 'lionel messi' to dataset
+2025-06-21 11:10:20,217 - eli5api - INFO - OpenAI API key found
+2025-06-21 11:10:20,217 - eli5api - INFO - Local model loaded for fallback
+2025-06-21 11:10:20,224 - eli5api - INFO - Dataset loader initialized with 31 examples from data/dataset.csv
+2025-06-21 11:10:20,224 - eli5api - INFO - Loaded 31 examples from dataset
+2025-06-21 11:10:20,225 - eli5api - INFO - Dataset logger initialized with path: data/eli5_dataset.csv
+2025-06-21 11:10:31,283 - eli5api - INFO - OpenAI API key found
+2025-06-21 11:10:31,283 - eli5api - INFO - Local model loaded for fallback
+2025-06-21 11:10:31,284 - eli5api - INFO - Dataset loader initialized with 31 examples from data/dataset.csv
+2025-06-21 11:10:31,284 - eli5api - INFO - Loaded 31 examples from dataset
+2025-06-21 11:10:31,286 - eli5api - INFO - Dataset logger initialized with path: data/eli5_dataset.csv
+2025-06-21 11:11:31,031 - eli5api - INFO - OpenAI API key found
+2025-06-21 11:11:31,031 - eli5api - INFO - Local model loaded for fallback
+2025-06-21 11:11:31,032 - eli5api - INFO - Dataset loader initialized with 31 examples from data/dataset.csv
+2025-06-21 11:11:31,032 - eli5api - INFO - Loaded 31 examples from dataset
+2025-06-21 11:11:31,035 - eli5api - INFO - Dataset logger initialized with path: data/eli5_dataset.csv
+2025-06-21 11:11:54,059 - eli5api - INFO - OpenAI API key found
+2025-06-21 11:11:54,059 - eli5api - INFO - Local model loaded for fallback
+2025-06-21 11:11:54,060 - eli5api - INFO - Dataset loader initialized with 31 examples from data/dataset.csv
+2025-06-21 11:11:54,060 - eli5api - INFO - Loaded 31 examples from dataset
+2025-06-21 11:11:54,063 - eli5api - INFO - Dataset logger initialized with path: data/eli5_dataset.csv
+2025-06-21 11:12:16,420 - eli5api - INFO - OpenAI API key found
+2025-06-21 11:12:16,420 - eli5api - INFO - Local model loaded for fallback
+2025-06-21 11:12:16,422 - eli5api - INFO - Dataset loader initialized with 31 examples from data/dataset.csv
+2025-06-21 11:12:16,422 - eli5api - INFO - Loaded 31 examples from dataset
+2025-06-21 11:12:16,424 - eli5api - INFO - Dataset logger initialized with path: data/eli5_dataset.csv
+2025-06-21 11:12:33,801 - eli5api - INFO - OpenAI API key found
+2025-06-21 11:12:33,802 - eli5api - INFO - Local model loaded for fallback
+2025-06-21 11:12:33,802 - eli5api - INFO - Dataset loader initialized with 31 examples from data/dataset.csv
+2025-06-21 11:12:33,802 - eli5api - INFO - Loaded 31 examples from dataset
+2025-06-21 11:12:33,804 - eli5api - INFO - Dataset logger initialized with path: data/eli5_dataset.csv
+2025-06-21 11:12:50,849 - eli5api - INFO - OpenAI API key found
+2025-06-21 11:12:50,849 - eli5api - INFO - Local model loaded for fallback
+2025-06-21 11:12:50,849 - eli5api - INFO - Dataset loader initialized with 31 examples from data/dataset.csv
+2025-06-21 11:12:50,849 - eli5api - INFO - Loaded 31 examples from dataset
+2025-06-21 11:12:50,851 - eli5api - INFO - Dataset logger initialized with path: data/eli5_dataset.csv
+2025-06-21 11:13:05,234 - eli5api - INFO - OpenAI API key found
+2025-06-21 11:13:05,234 - eli5api - INFO - Local model loaded for fallback
+2025-06-21 11:13:05,235 - eli5api - INFO - Dataset loader initialized with 31 examples from data/dataset.csv
+2025-06-21 11:13:05,235 - eli5api - INFO - Loaded 31 examples from dataset
+2025-06-21 11:13:05,237 - eli5api - INFO - Dataset logger initialized with path: data/eli5_dataset.csv
+2025-06-21 11:13:31,330 - eli5api - INFO - OpenAI API key found
+2025-06-21 11:13:31,330 - eli5api - INFO - Local model loaded for fallback
+2025-06-21 11:13:31,331 - eli5api - INFO - Dataset loader initialized with 31 examples from data/dataset.csv
+2025-06-21 11:13:31,331 - eli5api - INFO - Loaded 31 examples from dataset
+2025-06-21 11:13:31,332 - eli5api - INFO - Dataset logger initialized with path: data/eli5_dataset.csv
+2025-06-21 11:13:47,267 - eli5api - INFO - OpenAI API key found
+2025-06-21 11:13:47,267 - eli5api - INFO - Local model loaded for fallback
+2025-06-21 11:13:47,268 - eli5api - INFO - Dataset loader initialized with 31 examples from data/dataset.csv
+2025-06-21 11:13:47,268 - eli5api - INFO - Loaded 31 examples from dataset
+2025-06-21 11:13:47,270 - eli5api - INFO - Dataset logger initialized with path: data/eli5_dataset.csv
+2025-06-21 11:13:53,850 - eli5api - INFO - OpenAI API key found
+2025-06-21 11:13:53,850 - eli5api - INFO - Local model loaded for fallback
+2025-06-21 11:13:53,850 - eli5api - INFO - Dataset loader initialized with 31 examples from data/dataset.csv
+2025-06-21 11:13:53,851 - eli5api - INFO - Loaded 31 examples from dataset
+2025-06-21 11:13:53,853 - eli5api - INFO - Dataset logger initialized with path: data/eli5_dataset.csv
+2025-06-21 11:14:03,944 - eli5api - INFO - OpenAI API key found
+2025-06-21 11:14:03,944 - eli5api - INFO - Local model loaded for fallback
+2025-06-21 11:14:03,945 - eli5api - INFO - Dataset loader initialized with 31 examples from data/dataset.csv
+2025-06-21 11:14:03,945 - eli5api - INFO - Loaded 31 examples from dataset
+2025-06-21 11:14:03,947 - eli5api - INFO - Dataset logger initialized with path: data/eli5_dataset.csv
+2025-06-21 11:14:14,189 - httpx - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2025-06-21 11:14:14,195 - eli5api - INFO - Logged interaction for subject 'lionel messi' to dataset
+2025-06-21 11:14:18,228 - eli5api - INFO - OpenAI API key found
+2025-06-21 11:14:18,229 - eli5api - INFO - Local model loaded for fallback
+2025-06-21 11:14:18,229 - eli5api - INFO - Dataset loader initialized with 31 examples from data/dataset.csv
+2025-06-21 11:14:18,229 - eli5api - INFO - Loaded 31 examples from dataset
+2025-06-21 11:14:18,231 - eli5api - INFO - Dataset logger initialized with path: data/eli5_dataset.csv
+2025-06-21 11:14:29,668 - httpx - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2025-06-21 11:14:29,670 - eli5api - INFO - Logged interaction for subject 'lionel messi' to dataset
+2025-06-21 11:14:44,534 - eli5api - INFO - OpenAI API key found
+2025-06-21 11:14:44,534 - eli5api - INFO - Local model loaded for fallback
+2025-06-21 11:14:44,535 - eli5api - INFO - Dataset loader initialized with 31 examples from data/dataset.csv
+2025-06-21 11:14:44,535 - eli5api - INFO - Loaded 31 examples from dataset
+2025-06-21 11:14:44,537 - eli5api - INFO - Dataset logger initialized with path: data/eli5_dataset.csv
+2025-06-21 11:14:58,781 - eli5api - INFO - OpenAI API key found
+2025-06-21 11:14:58,782 - eli5api - INFO - Local model loaded for fallback
+2025-06-21 11:14:58,783 - eli5api - INFO - Dataset loader initialized with 31 examples from data/dataset.csv
+2025-06-21 11:14:58,783 - eli5api - INFO - Loaded 31 examples from dataset
+2025-06-21 11:14:58,785 - eli5api - INFO - Dataset logger initialized with path: data/eli5_dataset.csv
+2025-06-21 11:14:59,612 - httpx - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2025-06-21 11:14:59,692 - eli5api - INFO - Logged interaction for subject 'the president of the usa' to dataset
+2025-06-21 11:15:12,852 - eli5api - INFO - OpenAI API key found
+2025-06-21 11:15:12,852 - eli5api - INFO - Local model loaded for fallback
+2025-06-21 11:15:12,853 - eli5api - INFO - Dataset loader initialized with 31 examples from data/dataset.csv
+2025-06-21 11:15:12,853 - eli5api - INFO - Loaded 31 examples from dataset
+2025-06-21 11:15:12,854 - eli5api - INFO - Dataset logger initialized with path: data/eli5_dataset.csv
+2025-06-21 11:15:15,185 - httpx - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2025-06-21 11:15:15,188 - eli5api - INFO - Logged interaction for subject 'who is the president of the usa' to dataset
+2025-06-21 11:15:27,583 - eli5api - INFO - OpenAI API key found
+2025-06-21 11:15:27,584 - eli5api - INFO - Local model loaded for fallback
+2025-06-21 11:15:27,585 - eli5api - INFO - Dataset loader initialized with 31 examples from data/dataset.csv
+2025-06-21 11:15:27,585 - eli5api - INFO - Loaded 31 examples from dataset
+2025-06-21 11:15:27,589 - eli5api - INFO - Dataset logger initialized with path: data/eli5_dataset.csv
+2025-06-21 11:15:40,979 - eli5api - INFO - OpenAI API key found
+2025-06-21 11:15:40,979 - eli5api - INFO - Local model loaded for fallback
+2025-06-21 11:15:40,979 - eli5api - INFO - Dataset loader initialized with 31 examples from data/dataset.csv
+2025-06-21 11:15:40,980 - eli5api - INFO - Loaded 31 examples from dataset
+2025-06-21 11:15:40,981 - eli5api - INFO - Dataset logger initialized with path: data/eli5_dataset.csv
+2025-06-21 11:15:56,572 - eli5api - INFO - OpenAI API key found
+2025-06-21 11:15:56,572 - eli5api - INFO - Local model loaded for fallback
+2025-06-21 11:15:56,573 - eli5api - INFO - Dataset loader initialized with 31 examples from data/dataset.csv
+2025-06-21 11:15:56,573 - eli5api - INFO - Loaded 31 examples from dataset
+2025-06-21 11:15:56,574 - eli5api - INFO - Dataset logger initialized with path: data/eli5_dataset.csv
+2025-06-21 11:16:03,391 - httpx - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2025-06-21 11:16:03,392 - eli5api - INFO - Logged interaction for subject 'A triangle has angles in ratio 3:4:5. What are the angles' to dataset
+2025-06-21 11:16:10,674 - eli5api - INFO - OpenAI API key found
+2025-06-21 11:16:10,674 - eli5api - INFO - Local model loaded for fallback
+2025-06-21 11:16:10,674 - eli5api - INFO - Dataset loader initialized with 31 examples from data/dataset.csv
+2025-06-21 11:16:10,674 - eli5api - INFO - Loaded 31 examples from dataset
+2025-06-21 11:16:10,676 - eli5api - INFO - Dataset logger initialized with path: data/eli5_dataset.csv
+2025-06-21 11:16:24,845 - eli5api - INFO - OpenAI API key found
+2025-06-21 11:16:24,846 - eli5api - INFO - Local model loaded for fallback
+2025-06-21 11:16:24,847 - eli5api - INFO - Dataset loader initialized with 31 examples from data/dataset.csv
+2025-06-21 11:16:24,847 - eli5api - INFO - Loaded 31 examples from dataset
+2025-06-21 11:16:24,848 - eli5api - INFO - Dataset logger initialized with path: data/eli5_dataset.csv
+2025-06-21 11:16:40,151 - eli5api - INFO - OpenAI API key found
+2025-06-21 11:16:40,152 - eli5api - INFO - Local model loaded for fallback
+2025-06-21 11:16:40,152 - eli5api - INFO - Dataset loader initialized with 31 examples from data/dataset.csv
+2025-06-21 11:16:40,153 - eli5api - INFO - Loaded 31 examples from dataset
+2025-06-21 11:16:40,154 - eli5api - INFO - Dataset logger initialized with path: data/eli5_dataset.csv
+2025-06-21 11:16:56,420 - eli5api - INFO - OpenAI API key found
+2025-06-21 11:16:56,420 - eli5api - INFO - Local model loaded for fallback
+2025-06-21 11:16:56,421 - eli5api - INFO - Dataset loader initialized with 31 examples from data/dataset.csv
+2025-06-21 11:16:56,421 - eli5api - INFO - Loaded 31 examples from dataset
+2025-06-21 11:16:56,423 - eli5api - INFO - Dataset logger initialized with path: data/eli5_dataset.csv
+2025-06-21 11:17:12,074 - eli5api - INFO - OpenAI API key found
+2025-06-21 11:17:12,074 - eli5api - INFO - Local model loaded for fallback
+2025-06-21 11:17:12,074 - eli5api - INFO - Dataset loader initialized with 31 examples from data/dataset.csv
+2025-06-21 11:17:12,074 - eli5api - INFO - Loaded 31 examples from dataset
+2025-06-21 11:17:12,076 - eli5api - INFO - Dataset logger initialized with path: data/eli5_dataset.csv
+2025-06-21 11:17:27,004 - eli5api - INFO - OpenAI API key found
+2025-06-21 11:17:27,005 - eli5api - INFO - Local model loaded for fallback
+2025-06-21 11:17:27,020 - eli5api - INFO - Dataset loader initialized with 31 examples from data/dataset.csv
+2025-06-21 11:17:27,021 - eli5api - INFO - Loaded 31 examples from dataset
+2025-06-21 11:17:27,023 - eli5api - INFO - Dataset logger initialized with path: data/eli5_dataset.csv
+2025-06-21 11:17:27,522 - httpx - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2025-06-21 11:17:27,524 - eli5api - INFO - Logged interaction for subject 'lionel messi' to dataset
+2025-06-21 11:17:46,369 - httpx - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2025-06-21 11:17:46,372 - eli5api - INFO - Logged interaction for subject 'lionel messi' to dataset
+2025-06-21 11:18:00,503 - eli5api - INFO - OpenAI API key found
+2025-06-21 11:18:00,505 - eli5api - INFO - Local model loaded for fallback
+2025-06-21 11:18:00,506 - eli5api - INFO - Dataset loader initialized with 31 examples from data/dataset.csv
+2025-06-21 11:18:00,506 - eli5api - INFO - Loaded 31 examples from dataset
+2025-06-21 11:18:00,509 - eli5api - INFO - Dataset logger initialized with path: data/eli5_dataset.csv
+2025-06-21 11:18:15,816 - eli5api - INFO - OpenAI API key found
+2025-06-21 11:18:15,817 - eli5api - INFO - Local model loaded for fallback
+2025-06-21 11:18:15,818 - eli5api - INFO - Dataset loader initialized with 31 examples from data/dataset.csv
+2025-06-21 11:18:15,819 - eli5api - INFO - Loaded 31 examples from dataset
+2025-06-21 11:18:15,822 - eli5api - INFO - Dataset logger initialized with path: data/eli5_dataset.csv
+2025-06-21 11:18:31,389 - eli5api - INFO - OpenAI API key found
+2025-06-21 11:18:31,389 - eli5api - INFO - Local model loaded for fallback
+2025-06-21 11:18:31,390 - eli5api - INFO - Dataset loader initialized with 31 examples from data/dataset.csv
+2025-06-21 11:18:31,390 - eli5api - INFO - Loaded 31 examples from dataset
+2025-06-21 11:18:31,391 - eli5api - INFO - Dataset logger initialized with path: data/eli5_dataset.csv
+2025-06-21 11:18:46,985 - eli5api - INFO - OpenAI API key found
+2025-06-21 11:18:46,985 - eli5api - INFO - Local model loaded for fallback
+2025-06-21 11:18:46,986 - eli5api - INFO - Dataset loader initialized with 31 examples from data/dataset.csv
+2025-06-21 11:18:46,986 - eli5api - INFO - Loaded 31 examples from dataset
+2025-06-21 11:18:46,988 - eli5api - INFO - Dataset logger initialized with path: data/eli5_dataset.csv
+2025-06-21 11:19:03,581 - eli5api - INFO - OpenAI API key found
+2025-06-21 11:19:03,582 - eli5api - INFO - Local model loaded for fallback
+2025-06-21 11:19:03,582 - eli5api - INFO - Dataset loader initialized with 31 examples from data/dataset.csv
+2025-06-21 11:19:03,582 - eli5api - INFO - Loaded 31 examples from dataset
+2025-06-21 11:19:03,584 - eli5api - INFO - Dataset logger initialized with path: data/eli5_dataset.csv
+2025-06-21 11:21:04,533 - eli5api - INFO - OpenAI API key found
+2025-06-21 11:21:04,533 - eli5api - INFO - Local model loaded for fallback
+2025-06-21 11:21:04,535 - eli5api - INFO - Dataset loader initialized with 31 examples from data/dataset.csv
+2025-06-21 11:21:04,535 - eli5api - INFO - Loaded 31 examples from dataset
+2025-06-21 11:21:04,537 - eli5api - INFO - Dataset logger initialized with path: data/eli5_dataset.csv
+2025-06-21 11:21:19,600 - eli5api - INFO - OpenAI API key found
+2025-06-21 11:21:19,600 - eli5api - INFO - Local model loaded for fallback
+2025-06-21 11:21:19,601 - eli5api - INFO - Dataset loader initialized with 31 examples from data/dataset.csv
+2025-06-21 11:21:19,601 - eli5api - INFO - Loaded 31 examples from dataset
+2025-06-21 11:21:19,602 - eli5api - INFO - Dataset logger initialized with path: data/eli5_dataset.csv
+2025-06-21 11:21:36,888 - eli5api - INFO - OpenAI API key found
+2025-06-21 11:21:36,888 - eli5api - INFO - Local model loaded for fallback
+2025-06-21 11:21:36,889 - eli5api - INFO - Dataset loader initialized with 31 examples from data/dataset.csv
+2025-06-21 11:21:36,889 - eli5api - INFO - Loaded 31 examples from dataset
+2025-06-21 11:21:36,890 - eli5api - INFO - Dataset logger initialized with path: data/eli5_dataset.csv
+2025-06-21 11:21:52,568 - eli5api - INFO - OpenAI API key found
+2025-06-21 11:21:52,568 - eli5api - INFO - Local model loaded for fallback
+2025-06-21 11:21:52,570 - eli5api - INFO - Dataset loader initialized with 31 examples from data/dataset.csv
+2025-06-21 11:21:52,570 - eli5api - INFO - Loaded 31 examples from dataset
+2025-06-21 11:21:52,571 - eli5api - INFO - Dataset logger initialized with path: data/eli5_dataset.csv
+2025-06-21 11:22:08,437 - eli5api - INFO - OpenAI API key found
+2025-06-21 11:22:08,437 - eli5api - INFO - Local model loaded for fallback
+2025-06-21 11:22:08,438 - eli5api - INFO - Dataset loader initialized with 31 examples from data/dataset.csv
+2025-06-21 11:22:08,438 - eli5api - INFO - Loaded 31 examples from dataset
+2025-06-21 11:22:08,439 - eli5api - INFO - Dataset logger initialized with path: data/eli5_dataset.csv
+2025-06-21 11:22:23,171 - eli5api - INFO - OpenAI API key found
+2025-06-21 11:22:23,171 - eli5api - INFO - Local model loaded for fallback
+2025-06-21 11:22:23,172 - eli5api - INFO - Dataset loader initialized with 31 examples from data/dataset.csv
+2025-06-21 11:22:23,172 - eli5api - INFO - Loaded 31 examples from dataset
+2025-06-21 11:22:23,173 - eli5api - INFO - Dataset logger initialized with path: data/eli5_dataset.csv
+2025-06-21 11:22:39,283 - eli5api - INFO - OpenAI API key found
+2025-06-21 11:22:39,283 - eli5api - INFO - Local model loaded for fallback
+2025-06-21 11:22:39,284 - eli5api - INFO - Dataset loader initialized with 31 examples from data/dataset.csv
+2025-06-21 11:22:39,284 - eli5api - INFO - Loaded 31 examples from dataset
+2025-06-21 11:22:39,288 - eli5api - INFO - Dataset logger initialized with path: data/eli5_dataset.csv
+2025-06-21 11:22:55,377 - eli5api - INFO - OpenAI API key found
+2025-06-21 11:22:55,377 - eli5api - INFO - Local model loaded for fallback
+2025-06-21 11:22:55,377 - eli5api - INFO - Dataset loader initialized with 31 examples from data/dataset.csv
+2025-06-21 11:22:55,377 - eli5api - INFO - Loaded 31 examples from dataset
+2025-06-21 11:22:55,379 - eli5api - INFO - Dataset logger initialized with path: data/eli5_dataset.csv
+2025-06-21 11:23:12,594 - eli5api - INFO - OpenAI API key found
+2025-06-21 11:23:12,594 - eli5api - INFO - Local model loaded for fallback
+2025-06-21 11:23:12,595 - eli5api - INFO - Dataset loader initialized with 31 examples from data/dataset.csv
+2025-06-21 11:23:12,595 - eli5api - INFO - Loaded 31 examples from dataset
+2025-06-21 11:23:12,597 - eli5api - INFO - Dataset logger initialized with path: data/eli5_dataset.csv
+2025-06-21 11:23:30,934 - eli5api - INFO - OpenAI API key found
+2025-06-21 11:23:30,934 - eli5api - INFO - Local model loaded for fallback
+2025-06-21 11:23:30,935 - eli5api - INFO - Dataset loader initialized with 31 examples from data/dataset.csv
+2025-06-21 11:23:30,935 - eli5api - INFO - Loaded 31 examples from dataset
+2025-06-21 11:23:30,936 - eli5api - INFO - Dataset logger initialized with path: data/eli5_dataset.csv
+2025-06-21 11:23:46,280 - eli5api - INFO - OpenAI API key found
+2025-06-21 11:23:46,280 - eli5api - INFO - Local model loaded for fallback
+2025-06-21 11:23:46,281 - eli5api - INFO - Dataset loader initialized with 31 examples from data/dataset.csv
+2025-06-21 11:23:46,281 - eli5api - INFO - Loaded 31 examples from dataset
+2025-06-21 11:23:46,283 - eli5api - INFO - Dataset logger initialized with path: data/eli5_dataset.csv
+2025-06-21 11:24:04,847 - eli5api - INFO - OpenAI API key found
+2025-06-21 11:24:04,848 - eli5api - INFO - Local model loaded for fallback
+2025-06-21 11:24:04,848 - eli5api - INFO - Dataset loader initialized with 31 examples from data/dataset.csv
+2025-06-21 11:24:04,848 - eli5api - INFO - Loaded 31 examples from dataset
+2025-06-21 11:24:04,851 - eli5api - INFO - Dataset logger initialized with path: data/eli5_dataset.csv
+2025-06-21 11:24:20,564 - eli5api - INFO - OpenAI API key found
+2025-06-21 11:24:20,564 - eli5api - INFO - Local model loaded for fallback
+2025-06-21 11:24:20,564 - eli5api - INFO - Dataset loader initialized with 31 examples from data/dataset.csv
+2025-06-21 11:24:20,564 - eli5api - INFO - Loaded 31 examples from dataset
+2025-06-21 11:24:20,566 - eli5api - INFO - Dataset logger initialized with path: data/eli5_dataset.csv
+2025-06-21 11:24:56,781 - eli5api - INFO - OpenAI API key found
+2025-06-21 11:24:56,781 - eli5api - INFO - Local model loaded for fallback
+2025-06-21 11:24:56,782 - eli5api - INFO - Dataset loader initialized with 31 examples from data/dataset.csv
+2025-06-21 11:24:56,782 - eli5api - INFO - Loaded 31 examples from dataset
+2025-06-21 11:24:56,784 - eli5api - INFO - Dataset logger initialized with path: data/eli5_dataset.csv
+2025-06-21 11:25:14,272 - eli5api - INFO - OpenAI API key found
+2025-06-21 11:25:14,272 - eli5api - INFO - Local model loaded for fallback
+2025-06-21 11:25:14,273 - eli5api - INFO - Dataset loader initialized with 31 examples from data/dataset.csv
+2025-06-21 11:25:14,273 - eli5api - INFO - Loaded 31 examples from dataset
+2025-06-21 11:25:14,278 - eli5api - INFO - Dataset logger initialized with path: data/eli5_dataset.csv
+2025-06-21 11:25:23,673 - eli5api - INFO - OpenAI API key found
+2025-06-21 11:25:23,674 - eli5api - INFO - Local model loaded for fallback
+2025-06-21 11:25:23,674 - eli5api - INFO - Dataset loader initialized with 31 examples from data/dataset.csv
+2025-06-21 11:25:23,674 - eli5api - INFO - Loaded 31 examples from dataset
+2025-06-21 11:25:23,676 - eli5api - INFO - Dataset logger initialized with path: data/eli5_dataset.csv
+2025-06-21 11:25:34,824 - httpx - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2025-06-21 11:25:34,827 - eli5api - INFO - Logged interaction for subject 'quantum physics' to dataset
+2025-06-21 11:25:57,256 - eli5api - INFO - OpenAI API key found
+2025-06-21 11:25:57,256 - eli5api - INFO - Local model loaded for fallback
+2025-06-21 11:25:57,257 - eli5api - INFO - Dataset loader initialized with 31 examples from data/dataset.csv
+2025-06-21 11:25:57,257 - eli5api - INFO - Loaded 31 examples from dataset
+2025-06-21 11:25:57,259 - eli5api - INFO - Dataset logger initialized with path: data/eli5_dataset.csv
+2025-06-21 11:26:12,088 - eli5api - INFO - OpenAI API key found
+2025-06-21 11:26:12,089 - eli5api - INFO - Local model loaded for fallback
+2025-06-21 11:26:12,089 - eli5api - INFO - Dataset loader initialized with 31 examples from data/dataset.csv
+2025-06-21 11:26:12,089 - eli5api - INFO - Loaded 31 examples from dataset
+2025-06-21 11:26:12,091 - eli5api - INFO - Dataset logger initialized with path: data/eli5_dataset.csv
+2025-06-21 11:26:27,493 - eli5api - INFO - OpenAI API key found
+2025-06-21 11:26:27,493 - eli5api - INFO - Local model loaded for fallback
+2025-06-21 11:26:27,493 - eli5api - INFO - Dataset loader initialized with 31 examples from data/dataset.csv
+2025-06-21 11:26:27,493 - eli5api - INFO - Loaded 31 examples from dataset
+2025-06-21 11:26:27,495 - eli5api - INFO - Dataset logger initialized with path: data/eli5_dataset.csv
+2025-06-21 11:26:42,294 - eli5api - INFO - OpenAI API key found
+2025-06-21 11:26:42,294 - eli5api - INFO - Local model loaded for fallback
+2025-06-21 11:26:42,295 - eli5api - INFO - Dataset loader initialized with 31 examples from data/dataset.csv
+2025-06-21 11:26:42,295 - eli5api - INFO - Loaded 31 examples from dataset
+2025-06-21 11:26:42,300 - eli5api - INFO - Dataset logger initialized with path: data/eli5_dataset_v1.csv
+2025-06-21 11:26:59,054 - eli5api - INFO - OpenAI API key found
+2025-06-21 11:26:59,054 - eli5api - INFO - Local model loaded for fallback
+2025-06-21 11:26:59,055 - eli5api - INFO - Dataset loader initialized with 31 examples from data/dataset.csv
+2025-06-21 11:26:59,055 - eli5api - INFO - Loaded 31 examples from dataset
+2025-06-21 11:26:59,057 - eli5api - INFO - Dataset logger initialized with path: data/eli5_dataset_v1.csv
+2025-06-21 11:27:09,576 - eli5api - INFO - OpenAI API key found
+2025-06-21 11:27:09,577 - eli5api - INFO - Local model loaded for fallback
+2025-06-21 11:27:09,577 - eli5api - INFO - Dataset loader initialized with 31 examples from data/dataset.csv
+2025-06-21 11:27:09,577 - eli5api - INFO - Loaded 31 examples from dataset
+2025-06-21 11:27:09,580 - eli5api - INFO - Dataset logger initialized with path: data/eli5_dataset_v1.csv
+2025-06-21 11:27:13,937 - httpx - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2025-06-21 11:27:13,948 - eli5api - INFO - Logged interaction for subject 'machine learning' to dataset
+2025-06-21 11:27:19,250 - eli5api - INFO - OpenAI API key found
+2025-06-21 11:27:19,250 - eli5api - INFO - Local model loaded for fallback
+2025-06-21 11:27:19,252 - eli5api - INFO - Dataset loader initialized with 31 examples from data/dataset.csv
+2025-06-21 11:27:19,252 - eli5api - INFO - Loaded 31 examples from dataset
+2025-06-21 11:27:19,254 - eli5api - INFO - Dataset logger initialized with path: data/eli5_dataset_v1.csv
+2025-06-21 11:27:37,406 - eli5api - INFO - OpenAI API key found
+2025-06-21 11:27:37,406 - eli5api - INFO - Local model loaded for fallback
+2025-06-21 11:27:37,406 - eli5api - INFO - Dataset loader initialized with 31 examples from data/dataset.csv
+2025-06-21 11:27:37,407 - eli5api - INFO - Loaded 31 examples from dataset
+2025-06-21 11:27:37,408 - eli5api - INFO - Dataset logger initialized with path: data/eli5_dataset_v1.csv
+2025-06-21 11:27:37,865 - httpx - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2025-06-21 11:27:37,869 - eli5api - INFO - Logged interaction for subject 'artificial intelligence' to dataset
+2025-06-21 11:27:53,187 - eli5api - INFO - OpenAI API key found
+2025-06-21 11:27:53,187 - eli5api - INFO - Local model loaded for fallback
+2025-06-21 11:27:53,188 - eli5api - INFO - Dataset loader initialized with 31 examples from data/dataset.csv
+2025-06-21 11:27:53,188 - eli5api - INFO - Loaded 31 examples from dataset
+2025-06-21 11:27:53,189 - eli5api - INFO - Dataset logger initialized with path: data/eli5_dataset_v1.csv
+2025-06-21 11:28:09,282 - eli5api - INFO - OpenAI API key found
+2025-06-21 11:28:09,282 - eli5api - INFO - Local model loaded for fallback
+2025-06-21 11:28:09,283 - eli5api - INFO - Dataset loader initialized with 31 examples from data/dataset.csv
+2025-06-21 11:28:09,284 - eli5api - INFO - Loaded 31 examples from dataset
+2025-06-21 11:28:09,287 - eli5api - INFO - Dataset logger initialized with path: data/eli5_dataset_v1.csv
+2025-06-21 11:29:09,487 - eli5api - INFO - OpenAI API key found
+2025-06-21 11:29:09,487 - eli5api - INFO - Local model loaded for fallback
+2025-06-21 11:29:09,488 - eli5api - INFO - Dataset loader initialized with 31 examples from data/dataset.csv
+2025-06-21 11:29:09,488 - eli5api - INFO - Loaded 31 examples from dataset
+2025-06-21 11:29:09,490 - eli5api - INFO - Dataset logger initialized with path: data/eli5_dataset_v1.csv
+2025-06-21 11:30:03,051 - httpx - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2025-06-21 11:30:03,055 - eli5api - INFO - Logged interaction for subject 'Star Wars' to dataset
+2025-06-21 11:30:17,883 - httpx - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2025-06-21 11:30:17,885 - eli5api - INFO - Logged interaction for subject 'Star Wars' to dataset
+2025-06-21 11:39:54,035 - eli5api - INFO - OpenAI API key found
+2025-06-21 11:39:54,036 - eli5api - INFO - Local model loaded for fallback
+2025-06-21 11:39:54,048 - eli5api - INFO - Dataset loader initialized with 31 examples from data/dataset.csv
+2025-06-21 11:39:54,049 - eli5api - INFO - Loaded 31 examples from dataset
+2025-06-21 11:39:54,050 - eli5api - INFO - Dataset logger initialized with path: data/eli5_dataset.csv
+2025-06-21 11:40:03,526 - eli5api - ERROR - Error generating explanation: 'examples'
+2025-06-21 11:40:11,704 - eli5api - ERROR - Error generating explanation: 'examples'

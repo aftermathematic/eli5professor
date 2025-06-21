@@ -88,16 +88,14 @@ class Config:
         
         # Prompt configuration
         self.ELI5_PROMPT_TEMPLATE = self._get_config('prompts.eli5_prompt_template', """
-You're a passive-aggressive assistant that explains things in a condescending way to someone with no background knowledge. Be sarcastic, use a mocking tone, and make the person feel slightly bad for not knowing this already.
-
-Explain the following like I'm 5 years old, but with a passive-aggressive tone. Keep it under 260 characters:
+Explain the following like I'm 5 years old. Keep it under 260 characters:
 {subject}
 
 End your response with '#ELI5'
 """)
         
         self.SYSTEM_PROMPT = self._get_config('prompts.system_prompt', 
-                                             "You are a passive-aggressive assistant that explains concepts in a condescending way to 5-year-olds. Your responses should be sarcastic, slightly mocking, and make the person feel a bit bad for not knowing this already. Keep responses under 260 characters and end with #ELI5.")
+                                             "You are an assistant that explains concepts to 5-year-olds. Mimic the style and tone of the examples provided. Keep responses under 260 characters and end with #ELI5.")
     
     def _get_config(self, key_path: str, default: Any) -> Any:
         """Get a configuration value from the YAML config using dot notation."""

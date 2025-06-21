@@ -10,11 +10,20 @@ The bot is developed using MLOps principles, ensuring it is robust, reproducible
 
 ## How It Works
 
+### Twitter Bot
+
 1. **Listening:** The bot monitors Twitter for mentions (tweets where its handle is tagged).
 2. **Trigger:** When a tweet contains a subject to explain, it triggers the pipeline.
 3. **Processing:** The bot extracts the subject, uses a large language model (OpenAI API or local Hugging Face model) to generate an ELI5 explanation.
 4. **Replying:** The bot automatically replies to the tweet with a simple, easy-to-understand explanation.
 5. **Logging/Tracking:** All interactions, predictions, and model behavior are logged for traceability and possible future improvement.
+
+### API Service
+
+1. **Endpoint:** The API exposes an `/explain` endpoint that accepts POST requests with a subject to explain.
+2. **Processing:** The API uses the same language model and dataset as the Twitter bot to generate ELI5 explanations.
+3. **Response:** The API returns a JSON response with the subject and explanation.
+4. **Health Check:** The API includes a `/health` endpoint to monitor the service status.
 
 ---
 
@@ -153,9 +162,21 @@ You can modify these settings to customize the bot's behavior without changing t
    pip install -r requirements.txt
    ```
 
-3. Run the bot:
+3. Run the bot or API:
    ```bash
+   # Run the Twitter bot
    python src/main.py
+   
+   # Run the API server
+   uvicorn src.app:app --host 0.0.0.0 --port 8000
+   
+   # Or run both using Docker Compose
+   docker-compose up -d
+   ```
+
+4. Access the API documentation:
+   ```
+   http://localhost:8000/docs
    ```
 
 ---
@@ -168,6 +189,7 @@ Current MLOps implementations:
 2. **Infrastructure as Code**: ✅ Cloud resources defined with Terraform.
 3. **Data Versioning**: ✅ Datasets tracked with DVC and stored in S3.
 4. **Configuration Management**: ✅ YAML configuration files for externalizing parameters.
+5. **Model Deployment**: ✅ FastAPI service for serving model predictions.
 
 Future MLOps improvements planned for this project:
 
