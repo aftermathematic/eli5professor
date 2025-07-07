@@ -76,3 +76,5 @@ coverage.xml
 
 # System files
 Thumbs.db
+
+.terraform.d/plugins/
