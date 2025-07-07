@@ -19,20 +19,9 @@ from typing import Optional, Dict, Any, Union, List, Tuple
 from dotenv import load_dotenv
 from model_loader import get_model, get_tokenizer
 import torch
-from ratelimit import RateLimitChecker, handle_rate_limit_exception, get_wait_time_from_exception
 
 # Load environment variables from .env file
 load_dotenv()
-
-# Debug: Print current directory and check if /app/data exists
-print(f"Current directory: {os.getcwd()}")
-print(f"Does /app/data exist? {os.path.exists('/app/data')}")
-print(f"Does /app exist? {os.path.exists('/app')}")
-print(f"Does data directory exist? {os.path.exists('data')}")
-print(f"Directory listing of current directory: {os.listdir('.')}")
-print(f"Directory listing of /app (if exists): {os.listdir('/app') if os.path.exists('/app') else 'N/A'}")
-print(f"Directory listing of /app/data (if exists): {os.listdir('/app/data') if os.path.exists('/app/data') else 'N/A'}")
-print(f"Directory listing of data (if exists): {os.listdir('data') if os.path.exists('data') else 'N/A'}")
 
 # Configuration Loader
 class ConfigLoader:
@@ -88,19 +77,14 @@ class Config:
         self.POLL_INTERVAL = int(self._get_config('twitter.poll_interval', os.getenv('POLL_INTERVAL', '960')))
         self.MAX_TWEET_LENGTH = int(self._get_config('twitter.max_tweet_length', 280))
         self.USE_LOCAL_MODEL_FALLBACK = self._get_config('openai.use_local_model_fallback', 
-                                                        os.getenv('USE_LOCAL_MODEL_FALLBACK', 'true').lower() == 'true')        
-        # Dataset configuration
-        # Check if running in Docker container and adjust paths
-        if os.path.exists('/app/data'):
-            self.DATASET_PATH = '/app/data/dataset.csv'
-            self.ELI5_DATASET_PATH = '/app/data/eli5_dataset.csv'
-            self.LAST_SEEN_FILE = '/app/data/last_seen_id.txt'
-        else:
-            self.DATASET_PATH = os.getenv('DATASET_PATH', 'data/dataset.csv')
-            self.ELI5_DATASET_PATH = os.getenv('ELI5_DATASET_PATH', 'data/eli5_dataset.csv')
+                                                        os.getenv('USE_LOCAL_MODEL_FALLBACK', 'true').lower() == 'true')
         
-        self.NUM_EXAMPLES = int(os.getenv('NUM_EXAMPLES', '3'))
-
+        # Dataset configuration
+        self.DATASET_PATH = self._get_config('dataset.examples_dataset_path', 
+                                            os.getenv('DATASET_PATH', 'data/dataset.csv'))
+        self.ELI5_DATASET_PATH = self._get_config('dataset.eli5_dataset_path', 'data/eli5_dataset.csv')
+        self.NUM_EXAMPLES = int(self._get_config('dataset.num_examples', 
+                                                os.getenv('NUM_EXAMPLES', '3')))
         
         # Prompt configuration
         self.ELI5_PROMPT_TEMPLATE = self._get_config('prompts.eli5_prompt_template', """
@@ -128,17 +112,9 @@ End your response with '#ELI5'
 
 class DatasetLoader:
     """Class to load and process the dataset of examples."""
-    def __init__(self, dataset_path: str = None):
-        if dataset_path is None:
-            # Check if running in Docker container
-            if os.path.exists('/app/data'):
-                dataset_path = '/app/data/dataset.csv'
-            else:
-                dataset_path = os.getenv('DATASET_PATH', 'data/dataset.csv')
+    def __init__(self, dataset_path: str = "data/dataset.csv"):
         self.dataset_path = dataset_path
         self.examples = []
-        
-        # Load dataset
         self._load_dataset()
         logger.info(f"Dataset loader initialized with {len(self.examples)} examples from {dataset_path}")
     
@@ -205,9 +181,6 @@ class TwitterClient:
             return mentions.data or []
         except tweepy.errors.TooManyRequests as e:
             logger.warning(f"Rate limit hit while fetching mentions: {e}")
-            # Get rate limit info from the exception
-            seconds_to_wait = get_wait_time_from_exception(e)
-            logger.info(f"Need to wait {seconds_to_wait} seconds before retrying")
             raise
         except Exception as e:
             logger.error(f"Error fetching mentions: {e}")
@@ -226,9 +199,6 @@ class TwitterClient:
             return reply
         except tweepy.errors.TooManyRequests as e:
             logger.warning(f"Rate limit hit while posting reply: {e}")
-            # Get rate limit info from the exception
-            seconds_to_wait = get_wait_time_from_exception(e)
-            logger.info(f"Need to wait {seconds_to_wait} seconds before retrying")
             raise
         except Exception as e:
             logger.error(f"Error posting reply to tweet {tweet_id}: {e}")
@@ -386,13 +356,8 @@ class LastSeenIdManager:
     
     def get_last_seen_id(self) -> Optional[int]:
         """Read the last seen tweet ID to avoid duplicate processing."""
-        # Check if running in Docker container and adjust path if needed
-        last_seen_file = self.config.LAST_SEEN_FILE
-        if os.path.exists('/app/data') and not last_seen_file.startswith('/app'):
-            last_seen_file = '/app/data/last_seen_id.txt'
-        
         try:
-            with open(last_seen_file, 'r') as f:
+            with open(self.config.LAST_SEEN_FILE, 'r') as f:
                 return int(f.read().strip())
         except FileNotFoundError:
             logger.info(f"Last seen ID file not found at {self.config.LAST_SEEN_FILE}")
@@ -403,13 +368,8 @@ class LastSeenIdManager:
     
     def set_last_seen_id(self, last_id: Union[int, str]) -> None:
         """Record the latest processed tweet ID."""
-        # Check if running in Docker container and adjust path if needed
-        last_seen_file = self.config.LAST_SEEN_FILE
-        if os.path.exists('/app/data') and not last_seen_file.startswith('/app'):
-            last_seen_file = '/app/data/last_seen_id.txt'
-            
         try:
-            with open(last_seen_file, 'w') as f:
+            with open(self.config.LAST_SEEN_FILE, 'w') as f:
                 f.write(str(last_id))
             logger.debug(f"Updated last seen ID to {last_id}")
         except Exception as e:
@@ -433,13 +393,7 @@ class TweetProcessor:
 
 class DatasetLogger:
     """Class to log tweet data to a dataset file."""
-    def __init__(self, dataset_path: str = None):
-        if dataset_path is None:
-            # Check if running in Docker container
-            if os.path.exists('/app/data'):
-                dataset_path = '/app/data/eli5_dataset.csv'
-            else:
-                dataset_path = os.getenv('ELI5_DATASET_PATH', 'data/eli5_dataset.csv')
+    def __init__(self, dataset_path: str = "data/eli5_dataset.csv"):
         self.dataset_path = dataset_path
         logger.info(f"Dataset logger initialized with path: {dataset_path}")
     
@@ -468,7 +422,46 @@ class DatasetLogger:
         except Exception as e:
             logger.error(f"Error logging to dataset: {e}")
 
-# RateLimitHandler class has been replaced by the ratelimit module
+class RateLimitHandler:
+    """Class to handle rate limit exceptions."""
+    @staticmethod
+    def get_seconds_until_reset(exception: tweepy.errors.TooManyRequests) -> int:
+        """Extract seconds until rate limit resets from Tweepy TooManyRequests exception."""
+        reset = None
+        if hasattr(exception, 'response') and exception.response is not None:
+            reset_str = exception.response.headers.get('x-rate-limit-reset')
+            # Print the x-rate-limit-reset header
+            logger.info(f"Rate limit header x-rate-limit-reset: {reset_str}")
+            
+            if reset_str:
+                try:
+                    reset = int(reset_str)
+                    now = int(time.time())
+                    seconds_until_reset = max(reset - now, 0)
+                    logger.info(f"Calculated seconds until reset: {seconds_until_reset}")
+                    return seconds_until_reset
+                except Exception as e:
+                    logger.error(f"Error parsing rate limit reset time: {e}")
+        
+        # Default wait time if not found
+        default_wait = 16 * 60
+        logger.info(f"Using default wait time: {default_wait} seconds")
+        return default_wait
+    
+    @staticmethod
+    def wait_for_reset(seconds_left: int) -> None:
+        """Wait for the rate limit to reset with progress updates."""
+        buffer = 30  # Add a buffer to ensure rate limit has reset
+        total_seconds = seconds_left + buffer
+        logger.info(f"Rate limit hit. Waiting for {total_seconds} seconds before retrying.")
+        
+        # Sleep in shorter intervals with progress updates
+        sleep_left = total_seconds
+        while sleep_left > 0:
+            logger.info(f"Sleeping for {sleep_left} seconds...")
+            time.sleep(min(30, sleep_left))  # Sleep in shorter intervals
+            sleep_left -= min(30, sleep_left)
+        logger.info("Rate limit wait complete, resuming operations.")
 
 class ELI5Bot:
     """Main bot class that orchestrates the Twitter ELI5 bot."""
@@ -479,6 +472,7 @@ class ELI5Bot:
         self.llm_client = LLMClient(self.config)
         self.id_manager = LastSeenIdManager(self.config)
         self.tweet_processor = TweetProcessor(self.config)
+        self.rate_limit_handler = RateLimitHandler()
         self.dataset_logger = DatasetLogger(self.config.ELI5_DATASET_PATH)
         
         # Log the number of examples loaded from the dataset
@@ -524,34 +518,31 @@ class ELI5Bot:
             
             logger.info(f"Processing {len(mentions)} new mentions")
             
-            replied = False
             # Process each mention
             for tweet in reversed(mentions):  # Process oldest first
                 text = tweet.text
                 subject = self.tweet_processor.extract_keyword(text)
-                if subject and not replied:
+                
+                if subject:
+                    # Log the tweet being processed
                     logger.info(f"Processing tweet: {tweet.id} - Subject: {subject}")
+                    
+                    # Generate response
                     response = self.llm_client.generate_eli5_response(subject)
+
+                    # Log the generated response
                     logger.info(f"Generated response for tweet {tweet.id}: {response}")
+                    
+                    # Log to dataset
                     self.dataset_logger.log_interaction(tweet.id, subject, response)
-                    try:
-                        self.twitter_client.post_reply(response, tweet.id)
-                        replied = True
-                    except tweepy.errors.TooManyRequests as e:
-                        logger.warning(f"Rate limit when posting reply to tweet {tweet.id}: {e}")
-                        # Get rate limit info from the exception
-                        seconds_to_wait = get_wait_time_from_exception(e)
-                        logger.info(f"Need to wait {seconds_to_wait} seconds before retrying")
-                        break  # Exit loop; will try again next polling cycle
-                elif subject:
-                    logger.info(f"Skipped replying to tweet {tweet.id} (rate limit, already replied this cycle).")
+                    
+                    # Post reply with a fresh connection
+                    self.twitter_client.post_reply(response, tweet.id)
                 else:
                     logger.info(f"No keyword detected in tweet: {tweet.id}")
-                # Always mark as seen, so you don't keep replying to old tweets forever
+                
+                # Update last seen ID
                 self.id_manager.set_last_seen_id(tweet.id)
-                if replied:
-                    break  # Stop processing after one reply per cycle
-
         except Exception as e:
             logger.error(f"Error in process_mentions: {e}")
             # Don't re-raise to allow the main loop to continue
@@ -581,17 +572,26 @@ class ELI5Bot:
                         logger.info(f"Still waiting... {sleep_left} seconds remaining until next check")
             
             except tweepy.errors.TooManyRequests as e:
-                # Get the actual time until rate limit reset using the new module
-                seconds_left = get_wait_time_from_exception(e)
+                # Get the actual time until rate limit reset
+                seconds_left = self.rate_limit_handler.get_seconds_until_reset(e)
                 
                 # Use the rate limit reset time instead of the default poll interval
                 logger.info(f"Rate limit hit. Using reset time ({seconds_left} seconds) instead of default poll interval.")
                 
-                # Wait for the rate limit to reset with the new module
-                RateLimitChecker.wait_for_reset(seconds_left)
+                # Add a small buffer to ensure rate limit has reset
+                buffer = 30
+                total_seconds = seconds_left + buffer
                 
-                # Continue with the next iteration (skip the default poll interval)
-                continue
+                # Sleep in shorter intervals with progress updates
+                sleep_left = total_seconds
+                while sleep_left > 0:
+                    logger.info(f"Rate limit cooldown: {sleep_left} seconds remaining...")
+                    time.sleep(min(30, sleep_left))
+                    sleep_left -= min(30, sleep_left)
+                
+                logger.info("Rate limit cooldown complete, resuming operations.")
+
+                print("rate limit - seconds_left: ", seconds_left)
             
             except Exception as e:
                 logger.error(f"Unexpected error: {e}", exc_info=True)

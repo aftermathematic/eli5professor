@@ -10,7 +10,7 @@ import random
 import csv
 import datetime
 import torch
-from .model_loader import get_model, get_tokenizer
+from src.model_loader import get_model, get_tokenizer
 
 # Load environment variables
 load_dotenv()
@@ -105,21 +105,11 @@ class DatasetLoader:
         self.dataset_path = dataset_path
         self.examples = []
         self._load_dataset()
-        
-        # If no examples were loaded, use default examples
-        if not self.examples:
-            logger.warning(f"No examples loaded from {dataset_path}, using default examples")
-            self._load_default_examples()
-            
-        logger.info(f"Dataset loader initialized with {len(self.examples)} examples")
+        logger.info(f"Dataset loader initialized with {len(self.examples)} examples from {dataset_path}")
     
     def _load_dataset(self) -> None:
         """Load examples from the dataset file."""
         try:
-            if not os.path.exists(self.dataset_path):
-                logger.warning(f"Dataset file not found: {self.dataset_path}")
-                return
-                
             with open(self.dataset_path, 'r', newline='', encoding='utf-8') as f:
                 reader = csv.DictReader(f)
                 for row in reader:
@@ -130,23 +120,6 @@ class DatasetLoader:
                         })
         except Exception as e:
             logger.error(f"Error loading dataset: {e}")
-    
-    def _load_default_examples(self) -> None:
-        """Load default examples when dataset file is not available."""
-        self.examples = [
-            {
-                'term': 'gravity',
-                'explanation': 'Gravity? It\'s just what keeps you from floating away. Not rocket science... well, actually it kind of is. #ELI5'
-            },
-            {
-                'term': 'internet',
-                'explanation': 'The internet is where people argue with strangers and look at cat videos. You\'re using it right now, genius. #ELI5'
-            },
-            {
-                'term': 'Star Wars',
-                'explanation': 'You haven\'t seen Star Wars? It\'s the movie with space wizards and laser swords. It\'s okay, not everyone has taste. #ELI5'
-            }
-        ]
     
     def get_random_examples(self, num_examples: int = 3) -> list:
         """Get a random selection of examples from the dataset."""
@@ -175,13 +148,7 @@ class LLMClient:
             try:
                 self.tokenizer = get_tokenizer()
                 self.model = get_model()
-                
-                # Check if tokenizer and model were successfully loaded
-                if self.tokenizer is None or self.model is None:
-                    logger.warning("Tokenizer or model is None, disabling local model fallback")
-                    self.use_local_model_fallback = False
-                else:
-                    logger.info("Local model loaded for fallback")
+                logger.info("Local model loaded for fallback")
             except Exception as e:
                 logger.error(f"Failed to load local model: {e}")
                 self.use_local_model_fallback = False
@@ -264,48 +231,26 @@ class LLMClient:
     
     def _generate_with_local_model(self, prompt: str, max_length: Optional[int] = None) -> str:
         """Generate response using local Hugging Face model."""
-        # Extract the subject from the prompt
-        try:
-            subject = prompt.split("Explain the following like I'm 5 years old.")[1].split("End your response")[0].strip()
-            subject = subject.replace("Keep it under 260 characters and use a sarcastic, slightly condescending tone:", "").strip()
-            subject = subject.replace("Keep it under 260 characters:", "").strip()
-        except Exception as e:
-            logger.error(f"Error extracting subject from prompt: {e}")
-            subject = prompt  # Fallback to using the entire prompt
+        # Tokenize the prompt
+        inputs = self.tokenizer(prompt, return_tensors="pt", truncation=True, max_length=512)
         
-        logger.info(f"Extracted subject for local model: '{subject}'")
+        # Move to GPU if available
+        if torch.cuda.is_available():
+            inputs = {k: v.to("cuda") for k, v in inputs.items()}
         
-        # For Star Wars, provide a specific response
-        if "star wars" in subject.lower():
-            return "You haven't seen Star Wars? It's the movie with space wizards and laser swords. It's okay, not everyone has taste. #ELI5"
+        # Generate response
+        with torch.no_grad():
+            output_ids = self.model.generate(
+                **inputs,
+                max_length=150,  # Shorter for responses
+                num_return_sequences=1,
+                temperature=0.8,
+                do_sample=True
+            )
         
-        # For other subjects, provide generic responses based on the subject
-        if "gravity" in subject.lower():
-            return "Gravity? It's just what keeps you from floating away. Not rocket science... well, actually it kind of is. #ELI5"
-        elif "internet" in subject.lower():
-            return "The internet is where people argue with strangers and look at cat videos. You're using it right now, genius. #ELI5"
-        elif "computer" in subject.lower():
-            return "A computer is that box you stare at all day. It does everything except make you actually productive. #ELI5"
-        elif "sun" in subject.lower() or "solar" in subject.lower():
-            return "The Sun is that bright thing in the sky you apparently never look at. It's hot, it's bright, it's kind of important. #ELI5"
-        elif "elon" in subject.lower() or "musk" in subject.lower():
-            return "Elon Musk? Just a guy who tweets a lot and sometimes builds rockets. Not like he's changing the world or anything. #ELI5"
-        elif "new york" in subject.lower() or "nyc" in subject.lower():
-            return "New York is just a place with tall buildings where people pay too much for tiny apartments and pretend to be important. #ELI5"
-        elif "nasa" in subject.lower() or "space" in subject.lower():
-            return "NASA just sends people to space and stuff. No big deal, just the most amazing exploration humans have ever done. #ELI5"
-        
-        # Generate sarcastic responses for common topics
-        generic_responses = [
-            f"{subject}? Oh, just that thing everyone knows about except you, apparently. Don't worry, you'll catch up someday. #ELI5",
-            f"Wow, you don't know about {subject}? It's only like, the most basic thing ever. But sure, I'll explain it to your five-year-old brain. #ELI5",
-            f"{subject} is that thing people talk about when they want to sound smart at parties. Not that you'd know anything about that. #ELI5",
-            f"Really? {subject}? It's just the thing that everyone learned about in kindergarten. But I guess you were absent that day. #ELI5",
-            f"{subject} is what people with actual hobbies are into. Maybe try looking up from your phone sometime. #ELI5"
-        ]
-        
-        # Return a random generic response
-        return random.choice(generic_responses)
+        # Decode the response
+        explanation = self.tokenizer.decode(output_ids[0], skip_special_tokens=True)
+        return self._format_response(explanation, max_length)
     
     def _format_response(self, explanation: str, max_length: Optional[int] = None) -> str:
         """Format the explanation and add hashtag if needed."""
@@ -391,35 +336,24 @@ dataset_logger = DatasetLogger(config._get_config('dataset.eli5_dataset_path', '
 async def explain(request: ExplainRequest):
     """Generate an ELI5 explanation for the given subject."""
     try:
-        # Log the request
-        logger.info(f"Received explanation request for subject: {request.subject}")
-        
         # Validate input
         if not request.subject.strip():
-            logger.warning("Empty subject received")
             raise HTTPException(status_code=400, detail="Subject cannot be empty")
         
         # Generate explanation
-        logger.info("Generating explanation...")
         explanation = llm_client.generate_eli5_response(request.subject, request.max_length)
-        logger.info(f"Generated explanation: {explanation}")
         
         # Log the interaction to the dataset
-        try:
-            dataset_logger.log_interaction(request.subject, explanation)
-        except Exception as dataset_error:
-            logger.warning(f"Failed to log to dataset, but continuing: {dataset_error}")
+        dataset_logger.log_interaction(request.subject, explanation)
         
         # Return response
-        logger.info("Returning successful response")
         return {
             "subject": request.subject,
             "explanation": explanation
         }
     except Exception as e:
-        logger.error(f"Error generating explanation: {e}", exc_info=True)
-        # Return a more generic error message to the client
-        raise HTTPException(status_code=500, detail="An internal server error occurred while generating the explanation")
+        logger.error(f"Error generating explanation: {e}")
+        raise HTTPException(status_code=500, detail=f"Failed to generate explanation: {str(e)}")
 
 @app.get("/health")
 async def health():
@@ -454,66 +388,40 @@ def lambda_handler(event, context):
         Dict with statusCode and body
     """
     try:
-        import json
-        import traceback
-        
         logger.info("Lambda function invoked")
-        logger.info(f"Event type: {type(event)}")
         logger.info(f"Event: {event}")
-        
-        # Check if OpenAI API key is available
-        if not config.OPENAI_API_KEY:
-            logger.warning("OpenAI API key not found in environment variables")
-            # Set a default key for testing - this is just a placeholder and won't work
-            # but it allows the code to proceed for debugging
-            os.environ['OPENAI_API_KEY'] = 'sk-placeholder-for-debugging'
-            config.OPENAI_API_KEY = os.environ['OPENAI_API_KEY']
-            logger.info("Set placeholder OpenAI API key for debugging")
         
         # Extract the subject from the event
         subject = None
-        max_length = None
         
         # Check if the event is from API Gateway
         if 'body' in event:
-            logger.info("Found 'body' in event, parsing as API Gateway request")
+            import json
             try:
                 # Parse the body as JSON
-                body_str = event.get('body', '{}')
-                logger.info(f"Request body: {body_str}")
-                
-                body = json.loads(body_str)
+                body = json.loads(event.get('body', '{}'))
                 subject = body.get('subject')
                 max_length = body.get('max_length')
-                logger.info(f"Extracted subject: {subject}, max_length: {max_length}")
-            except Exception as json_error:
-                logger.error(f"Error parsing JSON body: {json_error}")
-                logger.error(f"Body content: {event.get('body')}")
+            except:
+                pass
         
         # Check if the subject is in query parameters
         if not subject and 'queryStringParameters' in event and event['queryStringParameters']:
-            logger.info("Subject not found in body, checking query parameters")
             subject = event['queryStringParameters'].get('subject')
             max_length_str = event['queryStringParameters'].get('max_length')
             max_length = int(max_length_str) if max_length_str and max_length_str.isdigit() else None
-            logger.info(f"Extracted subject from query params: {subject}, max_length: {max_length}")
         
         # Check if the subject is directly in the event
         if not subject and 'subject' in event:
-            logger.info("Subject not found in body or query params, checking event directly")
             subject = event.get('subject')
             max_length = event.get('max_length')
-            logger.info(f"Extracted subject from event: {subject}, max_length: {max_length}")
         
         # If no subject found, return an error
         if not subject:
-            logger.warning("No subject found in request")
             return {
                 'statusCode': 400,
                 'headers': {
-                    'Content-Type': 'application/json',
-                    'Access-Control-Allow-Origin': '*',
-                    'Access-Control-Allow-Methods': 'OPTIONS,POST,GET'
+                    'Content-Type': 'application/json'
                 },
                 'body': json.dumps({
                     'error': 'No subject provided'
@@ -521,24 +429,16 @@ def lambda_handler(event, context):
             }
         
         # Generate the explanation
-        logger.info(f"Generating explanation for subject: {subject}")
         explanation = llm_client.generate_eli5_response(subject, max_length)
-        logger.info(f"Generated explanation: {explanation}")
         
         # Log the interaction to the dataset
-        try:
-            dataset_logger.log_interaction(subject, explanation)
-        except Exception as dataset_error:
-            logger.warning(f"Failed to log to dataset, but continuing: {dataset_error}")
+        dataset_logger.log_interaction(subject, explanation)
         
         # Return the response
-        logger.info("Returning successful response")
         return {
             'statusCode': 200,
             'headers': {
-                'Content-Type': 'application/json',
-                'Access-Control-Allow-Origin': '*',
-                'Access-Control-Allow-Methods': 'OPTIONS,POST,GET'
+                'Content-Type': 'application/json'
             },
             'body': json.dumps({
                 'subject': subject,
@@ -546,18 +446,14 @@ def lambda_handler(event, context):
             })
         }
     except Exception as e:
-        logger.error(f"Error in lambda_handler: {e}")
-        logger.error(traceback.format_exc())
+        logger.error(f"Error in lambda_handler: {e}", exc_info=True)
         return {
             'statusCode': 500,
             'headers': {
-                'Content-Type': 'application/json',
-                'Access-Control-Allow-Origin': '*',
-                'Access-Control-Allow-Methods': 'OPTIONS,POST,GET'
+                'Content-Type': 'application/json'
             },
             'body': json.dumps({
-                'error': 'An internal server error occurred while processing your request',
-                'debug_info': str(e) if os.environ.get('DEBUG', 'false').lower() == 'true' else None
+                'error': f'Error: {str(e)}'
             })
         }
 

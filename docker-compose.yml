@@ -6,8 +6,8 @@ services:
       context: .
       dockerfile: Dockerfile
     volumes:
-      - ./data:/app/data
       - ./config:/app/config
+      - ./data:/app/data 
     env_file:
       - .env
     restart: unless-stopped
@@ -29,8 +29,8 @@ services:
       context: .
       dockerfile: Dockerfile
     volumes:
-      - ./data:/app/data
       - ./config:/app/config
+      - ./data:/app/data 
     env_file:
       - .env
     ports:
