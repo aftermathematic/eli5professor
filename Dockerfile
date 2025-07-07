@@ -12,7 +12,11 @@ RUN pip install --no-cache-dir --target=/app/deps \
     openai \
     transformers \
     pyyaml \
-    requests && \
+    requests \
+    discord.py \
+    mlflow \
+    pandas \
+    scikit-learn && \
     pip install --no-cache-dir --target=/app/deps torch --index-url https://download.pytorch.org/whl/cpu
 
 # Use a smaller base image for the final stage

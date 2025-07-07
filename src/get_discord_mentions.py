@@ -90,7 +90,7 @@ class DiscordListener:
 
     def was_target_mentioned(self, message: discord.Message) -> bool:
         """
-        Detects if the target user ID is mentioned (via the mentions list or mention syntax in content).
+        Detects if the target user ID is mentioned AND the message contains #eli5 hashtag.
         """
         target_id = self.config.TARGET_USER_ID
         mentioned = (
@@ -98,9 +98,16 @@ class DiscordListener:
             f"<@{target_id}>" in message.content or
             f"<@!{target_id}>" in message.content
         )
+        
+        # Check for #eli5 hashtag (case insensitive)
+        has_eli5_hashtag = "#eli5" in message.content.lower()
+        
+        # Both conditions must be true
+        valid_mention = mentioned and has_eli5_hashtag
+        
         logger.debug(f"[mention detection] mentions: {[(u.name, u.id) for u in message.mentions]}, "
-                     f"TARGET_USER_ID: {target_id}, Mentioned? {mentioned}")
-        return mentioned
+                     f"TARGET_USER_ID: {target_id}, Mentioned? {mentioned}, Has #eli5? {has_eli5_hashtag}, Valid? {valid_mention}")
+        return valid_mention
 
     def extract_keyword(self, message: discord.Message) -> str:
         """

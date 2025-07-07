@@ -1,6 +1,7 @@
 import os
 import yaml
 import logging
+import time
 from typing import Dict, Any, Optional
 from fastapi import FastAPI, HTTPException, Depends
 from pydantic import BaseModel, Field
@@ -10,6 +11,9 @@ import random
 import csv
 import datetime
 import torch
+import mlflow
+import mlflow.sklearn
+from mlflow.tracking import MlflowClient
 from .model_loader import get_model, get_tokenizer
 
 # Load environment variables
@@ -85,6 +89,12 @@ End your response with '#ELI5'
         
         # API configuration
         self.MAX_RESPONSE_LENGTH = int(self._get_config('api.max_response_length', 280))
+        
+        # MLflow configuration
+        self.MLFLOW_TRACKING_URI = self._get_config('mlflow.tracking_uri', 
+                                                   os.getenv('MLFLOW_TRACKING_URI', 'file:./mlruns'))
+        self.MLFLOW_EXPERIMENT_NAME = self._get_config('mlflow.experiment_name', 
+                                                      os.getenv('MLFLOW_EXPERIMENT_NAME', 'eli5-discord-bot'))
     
     def _get_config(self, key_path: str, default: Any) -> Any:
         """Get a configuration value from the YAML config using dot notation."""
@@ -157,6 +167,48 @@ class DatasetLoader:
         num_to_return = min(num_examples, len(self.examples))
         return random.sample(self.examples, num_to_return)
 
+class MLflowTracker:
+    """Class to handle MLflow experiment tracking."""
+    def __init__(self, config: Config):
+        self.config = config
+        mlflow.set_tracking_uri(config.MLFLOW_TRACKING_URI)
+        
+        # Create or get experiment
+        try:
+            experiment = mlflow.get_experiment_by_name(config.MLFLOW_EXPERIMENT_NAME)
+            if experiment is None:
+                mlflow.create_experiment(config.MLFLOW_EXPERIMENT_NAME)
+            mlflow.set_experiment(config.MLFLOW_EXPERIMENT_NAME)
+            logger.info(f"MLflow experiment set: {config.MLFLOW_EXPERIMENT_NAME}")
+        except Exception as e:
+            logger.error(f"Error setting up MLflow experiment: {e}")
+    
+    def log_eli5_generation(self, subject: str, explanation: str, model_used: str, 
+                           response_time: float, success: bool):
+        """Log an ELI5 generation event."""
+        try:
+            with mlflow.start_run():
+                # Log parameters
+                mlflow.log_param("subject", subject)
+                mlflow.log_param("model_used", model_used)
+                mlflow.log_param("max_response_length", self.config.MAX_RESPONSE_LENGTH)
+                
+                # Log metrics
+                mlflow.log_metric("response_time_seconds", response_time)
+                mlflow.log_metric("response_length", len(explanation))
+                mlflow.log_metric("success", 1 if success else 0)
+                mlflow.log_metric("has_eli5_hashtag", 1 if "#ELI5" in explanation else 0)
+                
+                # Log the actual response as an artifact
+                mlflow.log_text(explanation, f"response_{int(time.time())}.txt")
+                
+                # Log tags for filtering
+                mlflow.set_tag("request_type", "eli5_generation")
+                mlflow.set_tag("model_type", model_used)
+                
+        except Exception as e:
+            logger.error(f"Error logging to MLflow: {e}")
+
 class LLMClient:
     """Class to handle LLM interactions (OpenAI and local model)."""
     def __init__(self, config: Config):
@@ -189,6 +241,9 @@ class LLMClient:
         # Load dataset examples
         self.dataset_loader = DatasetLoader(config.DATASET_PATH)
         logger.info(f"Loaded {len(self.dataset_loader.examples)} examples from dataset")
+        
+        # Initialize MLflow tracker
+        self.mlflow_tracker = MLflowTracker(config)
     
     def _create_openai_client(self):
         """Create a fresh OpenAI client for each request."""
@@ -196,7 +251,7 @@ class LLMClient:
     
     def generate_eli5_response(self, subject: str, max_length: Optional[int] = None) -> str:
         """
-        Generate an ELI5 explanation for the given subject.
+        Generate an ELI5 explanation for the given subject with MLflow tracking.
         
         Args:
             subject: The topic to explain
@@ -205,31 +260,58 @@ class LLMClient:
         Returns:
             A simplified explanation
         """
-        # Format the prompt
-        prompt = self.config.ELI5_PROMPT_TEMPLATE.format(subject=subject)
+        start_time = time.time()
+        model_used = "unknown"
+        success = False
+        explanation = ""
         
-        # Use provided max_length if available, otherwise use default
-        response_max_length = max_length if max_length is not None else self.config.MAX_RESPONSE_LENGTH
+        try:
+            # Format the prompt
+            prompt = self.config.ELI5_PROMPT_TEMPLATE.format(subject=subject)
+            
+            # Use provided max_length if available, otherwise use default
+            response_max_length = max_length if max_length is not None else self.config.MAX_RESPONSE_LENGTH
+            
+            # Try OpenAI first if API key is available
+            if self.has_openai_key:
+                try:
+                    explanation = self._generate_with_openai(prompt, max_length)
+                    model_used = "openai_" + self.config.OPENAI_MODEL
+                    success = True
+                except Exception as e:
+                    logger.error(f"OpenAI generation failed: {e}")
+                    if not self.use_local_model_fallback:
+                        explanation = f"Sorry, I couldn't explain '{subject}' right now. Try again later! #ELI5"
+                        model_used = "openai_failed"
+            
+            # Fall back to local model if OpenAI fails or is not available
+            if not success and self.use_local_model_fallback:
+                try:
+                    explanation = self._generate_with_local_model(prompt, max_length)
+                    model_used = "local_model"
+                    success = True
+                except Exception as e:
+                    logger.error(f"Local model generation failed: {e}")
+                    explanation = f"Sorry, I couldn't explain '{subject}' right now. Try again later! #ELI5"
+                    model_used = "local_failed"
+            
+            # If both failed
+            if not success:
+                explanation = f"Sorry, I couldn't explain '{subject}' right now. Try again later! #ELI5"
+                model_used = "all_failed"
+            
+        finally:
+            # Always log to MLflow
+            response_time = time.time() - start_time
+            self.mlflow_tracker.log_eli5_generation(
+                subject=subject,
+                explanation=explanation,
+                model_used=model_used,
+                response_time=response_time,
+                success=success
+            )
         
-        # Try OpenAI first if API key is available
-        if self.has_openai_key:
-            try:
-                return self._generate_with_openai(prompt, max_length)
-            except Exception as e:
-                logger.error(f"OpenAI generation failed: {e}")
-                if not self.use_local_model_fallback:
-                    return f"Sorry, I couldn't explain '{subject}' right now. Try again later! #ELI5"
-        
-        # Fall back to local model if OpenAI fails or is not available
-        if self.use_local_model_fallback:
-            try:
-                return self._generate_with_local_model(prompt, max_length)
-            except Exception as e:
-                logger.error(f"Local model generation failed: {e}")
-                return f"Sorry, I couldn't explain '{subject}' right now. Try again later! #ELI5"
-        
-        # If we get here, both methods failed or weren't available
-        return f"Sorry, I couldn't explain '{subject}' right now. Try again later! #ELI5"
+        return explanation
     
     def _generate_with_openai(self, prompt: str, max_length: Optional[int] = None) -> str:
         """Generate response using OpenAI API with few-shot examples."""
@@ -423,7 +505,7 @@ async def explain(request: ExplainRequest):
 
 @app.get("/health")
 async def health():
-    """Health check endpoint."""
+    """Health check endpoint with MLflow status."""
     # Check if OpenAI API key is available
     openai_status = "available" if llm_client.has_openai_key else "unavailable"
     
@@ -433,12 +515,22 @@ async def health():
     # Check if dataset is loaded
     dataset_status = "loaded" if len(llm_client.dataset_loader.examples) > 0 else "not loaded"
     
+    # Check MLflow connection
+    mlflow_status = "unknown"
+    try:
+        mlflow.get_experiment_by_name(config.MLFLOW_EXPERIMENT_NAME)
+        mlflow_status = "connected"
+    except Exception:
+        mlflow_status = "disconnected"
+    
     return {
         "status": "healthy",
         "openai_api": openai_status,
         "local_model": local_model_status,
         "dataset": dataset_status,
-        "examples_count": len(llm_client.dataset_loader.examples)
+        "examples_count": len(llm_client.dataset_loader.examples),
+        "mlflow": mlflow_status,
+        "mlflow_experiment": config.MLFLOW_EXPERIMENT_NAME
     }
 
 # Lambda handler function
