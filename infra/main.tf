@@ -41,9 +41,9 @@ module "app_repository" {
 }
 
 # Secrets Manager for credentials
-resource "aws_secretsmanager_secret" "twitter_credentials" {
-  name        = "${var.app_name}/twitter-credentials-${var.environment}"
-  description = "Twitter API credentials for the ELI5 bot"
+resource "aws_secretsmanager_secret" "discord_credentials" {
+  name        = "${var.app_name}/discord-credentials-${var.environment}"
+  description = "Discord API credentials for the ELI5 bot"
 
   tags = local.tags
 }

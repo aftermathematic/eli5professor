@@ -1,6 +1,6 @@
-# PowerShell script for comprehensive deployment of ELI5 Twitter Bot
+# PowerShell script for comprehensive deployment of ELI5 Discord Bot
 
-Write-Host "ELI5 Twitter Bot - Comprehensive Deployment (PowerShell)"
+Write-Host "ELI5 Discord Bot - Comprehensive Deployment (PowerShell)"
 Write-Host "======================================================"
 Write-Host ""
 Write-Host "This script will guide you through the entire deployment process."
@@ -100,7 +100,7 @@ Write-Host ""
 
 # Run terraform plan
 Write-Host "Running terraform plan..."
-terraform plan -var-file=dev.tfvars -var "$deploymentVar" -target=module.model_bucket -target=aws_secretsmanager_secret.twitter_credentials -target=aws_secretsmanager_secret.openai_credentials -out tfplan
+terraform plan -var-file=dev.tfvars -var "$deploymentVar" -target=module.model_bucket -target=aws_secretsmanager_secret.discord_credentials -target=aws_secretsmanager_secret.openai_credentials -out tfplan
 
 if ($LASTEXITCODE -ne 0) {
     Write-Host ""
@@ -124,10 +124,10 @@ Write-Host ""
 Write-Host "Step 4: Configure secrets"
 Write-Host "-----------------------"
 Write-Host ""
-Write-Host "Please configure your Twitter and OpenAI API credentials in AWS Secrets Manager."
+Write-Host "Please configure your Discord and OpenAI API credentials in AWS Secrets Manager."
 Write-Host ""
 Write-Host "1. Open the AWS Console: https://console.aws.amazon.com/secretsmanager/home"
-Write-Host "2. Find the secrets 'eli5-twitter-bot/twitter-credentials-dev' and 'eli5-twitter-bot/openai-credentials-dev'"
+Write-Host "2. Find the secrets 'eli5-discord-bot/discord-credentials-dev' and 'eli5-discord-bot/openai-credentials-dev'"
 Write-Host "3. Update the secret values with your API credentials"
 Write-Host ""
 Read-Host "Press Enter when you have configured your secrets"

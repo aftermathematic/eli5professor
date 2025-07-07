@@ -1,7 +1,7 @@
 @echo off
-REM Comprehensive deployment script for ELI5 Twitter Bot on Windows
+REM Comprehensive deployment script for ELI5 Discord Bot on Windows
 
-echo ELI5 Twitter Bot - Comprehensive Deployment
+echo ELI5 Discord Bot - Comprehensive Deployment
 echo ==========================================
 echo.
 echo This script will guide you through the entire deployment process.
@@ -96,7 +96,7 @@ echo.
 
 REM Run terraform plan
 echo Running terraform plan...
-terraform plan -var-file=dev.tfvars -var "%DEPLOYMENT_VAR%" -target=module.model_bucket -target=aws_secretsmanager_secret.twitter_credentials -target=aws_secretsmanager_secret.openai_credentials -out tfplan
+terraform plan -var-file=dev.tfvars -var "%DEPLOYMENT_VAR%" -target=module.model_bucket -target=aws_secretsmanager_secret.discord_credentials -target=aws_secretsmanager_secret.openai_credentials -out tfplan
 
 if %ERRORLEVEL% neq 0 (
     echo.
@@ -120,10 +120,10 @@ echo.
 echo Step 4: Configure secrets
 echo -----------------------
 echo.
-echo Please configure your Twitter and OpenAI API credentials in AWS Secrets Manager.
+echo Please configure your Discord and OpenAI API credentials in AWS Secrets Manager.
 echo.
 echo 1. Open the AWS Console: https://console.aws.amazon.com/secretsmanager/home
-echo 2. Find the secrets "eli5-twitter-bot/twitter-credentials-dev" and "eli5-twitter-bot/openai-credentials-dev"
+echo 2. Find the secrets "eli5-discord-bot/discord-credentials-dev" and "eli5-discord-bot/openai-credentials-dev"
 echo 3. Update the secret values with your API credentials
 echo.
 echo Press any key when you have configured your secrets...
