@@ -1,0 +1,14 @@
+artifact_uri: file:///C:/Users/vermeerbergenj/OneDrive - delaware/Documents/EHB/Postgraduaat/MLOPS/eli5professor/mlruns/869612450481191232/dc86d5d2ff3841a69aa0416168f8129b/artifacts
+end_time: 1751926060047
+entry_point_name: ''
+experiment_id: '869612450481191232'
+lifecycle_stage: active
+run_id: dc86d5d2ff3841a69aa0416168f8129b
+run_name: burly-mole-329
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1751926059863
+status: 3
+tags: []
+user_id: vermeerbergenj
