@@ -1,7 +1,7 @@
 # PowerShell script to manually download Terraform modules
 
-Write-Host "ELI5 Twitter Bot - Download Terraform Modules (PowerShell)"
-Write-Host "======================================================="
+Write-Host "ELI5 Discord Bot - Download Terraform Modules (PowerShell)"
+Write-Host "========================================================="
 Write-Host ""
 Write-Host "This script will manually download Terraform modules to fix initialization issues."
 Write-Host ""
@@ -46,9 +46,9 @@ function Download-Module {
 # Download the modules
 Download-Module -moduleName "model_bucket" -moduleSource "modules\s3-bucket"
 Download-Module -moduleName "app_repository" -moduleSource "modules\ecr-repository"
-Download-Module -moduleName "twitter_bot_service" -moduleSource "modules\apprunner-service"
+Download-Module -moduleName "discord_bot_service" -moduleSource "modules\apprunner-service"
 Download-Module -moduleName "api_service" -moduleSource "modules\apprunner-service"
-Download-Module -moduleName "twitter_bot_lambda" -moduleSource "modules\lambda-function"
+Download-Module -moduleName "discord_bot_lambda" -moduleSource "modules\lambda-function"
 Download-Module -moduleName "api_lambda" -moduleSource "modules\lambda-function"
 
 # Create a modules.json file
@@ -67,7 +67,7 @@ $modulesJson = @"
       "Dir": "modules/ecr-repository"
     },
     {
-      "Key": "twitter_bot_service",
+      "Key": "discord_bot_service",
       "Source": "./modules/apprunner-service",
       "Dir": "modules/apprunner-service"
     },
@@ -77,7 +77,7 @@ $modulesJson = @"
       "Dir": "modules/apprunner-service"
     },
     {
-      "Key": "twitter_bot_lambda",
+      "Key": "discord_bot_lambda",
       "Source": "./modules/lambda-function",
       "Dir": "modules/lambda-function"
     },

@@ -2,16 +2,20 @@ FROM python:3.10-slim AS builder
 
 WORKDIR /app
 
-# Install core dependencies
+# Install only essential dependencies for the API
 COPY requirements.txt .
 RUN pip install --no-cache-dir --target=/app/deps \
-    tweepy \
+    fastapi \
+    uvicorn[standard] \
+    pydantic \
     python-dotenv \
     openai \
     pyyaml \
     requests \
-    torch \
-    transformers
+    discord.py \
+    mlflow \
+    pandas \
+    scikit-learn
 
 # Use a smaller base image for the final stage
 FROM python:3.10-slim
@@ -31,10 +35,15 @@ COPY data/ /app/data/
 # Create volume mount point for persistent data
 VOLUME /app/data
 
+# Copy dataset files to the volume mount point (if they exist)
+RUN mkdir -p /app/data
+RUN if [ -f data/dataset.csv ]; then cp data/dataset.csv /app/data/; fi
+RUN if [ -f data/eli5_dataset.csv ]; then cp data/eli5_dataset.csv /app/data/; fi
+
 # Set environment variables
 ENV PYTHONUNBUFFERED=1
 ENV LAST_SEEN_FILE=/app/data/last_seen_id.txt
 ENV USE_LOCAL_MODEL_FALLBACK=false
 
-# Default command to run the Twitter Bot
-CMD ["python", "src/main.py"]
+# Default command to run the API
+CMD ["python", "-m", "uvicorn", "src.app:app", "--host", "0.0.0.0", "--port", "8000"]

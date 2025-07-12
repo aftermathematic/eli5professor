@@ -1,7 +1,7 @@
 # PowerShell script to fix Terraform initialization issues related to _netrc file
 
-Write-Host "ELI5 Twitter Bot - Fix Terraform Init (PowerShell)"
-Write-Host "=============================================="
+Write-Host "ELI5 Discord Bot - Fix Terraform Init (PowerShell)"
+Write-Host "==============================================="
 Write-Host ""
 Write-Host "This script will fix Terraform initialization issues related to the _netrc file."
 Write-Host ""

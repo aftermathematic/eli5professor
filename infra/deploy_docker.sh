@@ -1,9 +1,9 @@
 #!/bin/bash
 
-# Script to build and deploy Docker image to ECR for the ELI5 Twitter Bot project
+# Script to build and deploy Docker image to ECR for the ELI5 Discord Bot project
 
-echo "ELI5 Twitter Bot - Docker Image Deployment"
-echo "=========================================="
+echo "ELI5 Discord Bot - Docker Image Deployment"
+echo "==========================================="
 echo ""
 
 # Check if AWS CLI is installed

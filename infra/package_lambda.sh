@@ -2,8 +2,8 @@
 
 # Script to package Lambda functions and upload them to S3
 
-echo "ELI5 Twitter Bot - Lambda Packaging"
-echo "=================================="
+echo "ELI5 Discord Bot - Lambda Packaging"
+echo "==================================="
 echo ""
 
 # Check if AWS CLI is installed
@@ -104,8 +104,8 @@ package_and_upload() {
     cd "$CURRENT_DIR"
 }
 
-# Package and upload the Twitter bot Lambda function
-package_and_upload "twitter_bot" "src" "main.lambda_handler" "lambda/twitter_bot.zip" "$SCRIPT_DIR/lambda_requirements/twitter_bot_requirements.txt"
+# Package and upload the Discord bot Lambda function
+package_and_upload "discord_bot" "src" "main.lambda_handler" "lambda/discord_bot.zip" "$SCRIPT_DIR/lambda_requirements/discord_bot_requirements.txt"
 
 # Package and upload the API Lambda function
 package_and_upload "api" "src" "app.lambda_handler" "lambda/api.zip" "$SCRIPT_DIR/lambda_requirements/api_requirements.txt"

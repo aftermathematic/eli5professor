@@ -2,8 +2,8 @@
 
 # Script to fix Terraform initialization issues related to _netrc file
 
-echo "ELI5 Twitter Bot - Fix Terraform Init"
-echo "==================================="
+echo "ELI5 Discord Bot - Fix Terraform Init"
+echo "===================================="
 echo ""
 echo "This script will fix Terraform initialization issues related to the _netrc file."
 echo ""

@@ -1,9 +1,9 @@
 #!/bin/bash
 
-# Script to deploy Lambda functions for the ELI5 Twitter Bot project
+# Script to deploy Lambda functions for the ELI5 Discord Bot project
 
-echo "ELI5 Twitter Bot - Lambda Deployment"
-echo "==================================="
+echo "ELI5 Discord Bot - Lambda Deployment"
+echo "===================================="
 echo ""
 
 # Check if AWS CLI is installed
@@ -49,9 +49,9 @@ echo "S3 Bucket: $S3_BUCKET"
 
 # Check if Lambda packages exist in S3
 echo "Checking if Lambda packages exist in S3..."
-aws s3 ls "s3://$S3_BUCKET/lambda/twitter_bot.zip" > /dev/null 2>&1
+aws s3 ls "s3://$S3_BUCKET/lambda/discord_bot.zip" > /dev/null 2>&1
 if [ $? -ne 0 ]; then
-    echo "Twitter bot Lambda package not found in S3."
+    echo "Discord bot Lambda package not found in S3."
     echo "Please run the package_lambda.sh script first."
     exit 1
 fi
@@ -84,10 +84,10 @@ fi
 echo ""
 echo "Lambda functions deployed successfully!"
 echo ""
-echo "Twitter Bot Lambda Function: $(terraform output -raw twitter_bot_lambda_function_name 2>/dev/null || echo "Not available")"
+echo "Discord Bot Lambda Function: $(terraform output -raw discord_bot_lambda_function_name 2>/dev/null || echo "Not available")"
 echo "API Gateway URL: $(terraform output -raw api_gateway_url 2>/dev/null || echo "Not available")"
 echo ""
-echo "The Twitter bot will run automatically according to the schedule."
+echo "The Discord bot will run automatically according to the schedule."
 echo "You can invoke it manually with:"
-echo "aws lambda invoke --function-name $(terraform output -raw twitter_bot_lambda_function_name 2>/dev/null || echo "function-name") --payload '{}' response.json"
+echo "aws lambda invoke --function-name $(terraform output -raw discord_bot_lambda_function_name 2>/dev/null || echo "function-name") --payload '{}' response.json"
 echo ""

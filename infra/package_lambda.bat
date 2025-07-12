@@ -1,8 +1,8 @@
 @echo off
 REM Script to package Lambda functions and upload them to S3
 
-echo ELI5 Twitter Bot - Package Lambda Functions
-echo =========================================
+echo ELI5 Discord Bot - Package Lambda Functions
+echo ==========================================
 echo.
 echo This script will package Lambda functions and upload them to S3.
 echo.
@@ -41,15 +41,15 @@ if exist %TEMP_DIR% rmdir /s /q %TEMP_DIR%
 mkdir %TEMP_DIR%
 echo Temporary directory: %TEMP_DIR%
 
-REM Package the Twitter bot Lambda function
+REM Package the Discord bot Lambda function
 echo.
-echo Packaging Twitter bot Lambda function...
-echo ------------------------------------
+echo Packaging Discord bot Lambda function...
+echo -------------------------------------
 
 REM Copy source files
 echo Copying source files...
 xcopy /E /I /Y "%~dp0..\src\*" %TEMP_DIR%\
-copy /Y "%~dp0lambda_requirements\twitter_bot_requirements.txt" %TEMP_DIR%\requirements.txt
+copy /Y "%~dp0lambda_requirements\discord_bot_requirements.txt" %TEMP_DIR%\requirements.txt
 
 REM Install dependencies
 echo Installing dependencies...
@@ -77,18 +77,18 @@ for /d /r %TEMP_DIR% %%d in (*.egg-info) do if exist "%%d" rmdir /s /q "%%d"
 
 REM Create the zip file
 echo Creating zip file...
-powershell -Command "& {Compress-Archive -Path '%TEMP_DIR%\*' -DestinationPath '%TEMP_DIR%\twitter_bot.zip' -Force}"
+powershell -Command "& {Compress-Archive -Path '%TEMP_DIR%\*' -DestinationPath '%TEMP_DIR%\discord_bot.zip' -Force}"
 
 REM Upload to S3
 echo Uploading to S3...
-aws s3 cp %TEMP_DIR%\twitter_bot.zip s3://%S3_BUCKET%/lambda/twitter_bot.zip
+aws s3 cp %TEMP_DIR%\discord_bot.zip s3://%S3_BUCKET%/lambda/discord_bot.zip
 
 if %ERRORLEVEL% neq 0 (
-    echo Failed to upload Twitter bot Lambda function to S3.
+    echo Failed to upload Discord bot Lambda function to S3.
     exit /b 1
 )
 
-echo Twitter bot Lambda function uploaded to S3.
+echo Discord bot Lambda function uploaded to S3.
 
 REM Package the API Lambda function
 echo.

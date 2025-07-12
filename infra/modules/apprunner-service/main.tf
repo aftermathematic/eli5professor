@@ -2,19 +2,29 @@ resource "aws_apprunner_service" "this" {
   service_name = var.service_name
 
   source_configuration {
-    # Use a public ECR image as a placeholder
-    # This will be updated to the actual ECR image after it's pushed
+    # Use the actual ECR image
     image_repository {
       image_configuration {
         port = var.port
         runtime_environment_variables = var.environment_variables
       }
-      image_identifier      = "public.ecr.aws/nginx/nginx:latest"
-      image_repository_type = "ECR_PUBLIC"
+      image_identifier      = var.image_identifier
+      image_repository_type = "ECR"
     }
 
-    # Auto deployments are not supported for public ECR images
-    auto_deployments_enabled = false
+    # Enable auto deployments for ECR images
+    auto_deployments_enabled = true
+    
+    # Add authentication configuration for ECR access
+    authentication_configuration {
+      access_role_arn = aws_iam_role.apprunner_ecr_access.arn
+    }
+  }
+
+  # Add instance configuration for better performance
+  instance_configuration {
+    cpu    = "1 vCPU"
+    memory = "2 GB"
   }
 
   tags = var.tags

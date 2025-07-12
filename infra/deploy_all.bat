@@ -83,8 +83,32 @@ echo.
 echo Checking for existing resources...
 echo.
 
-REM Run the wait_for_deletion script
+REM Set flag to indicate we're running from deploy_all.bat
+set DEPLOY_ALL_RUNNING=1
+
+REM Run the wait_for_deletion script with error logging
+echo [DEBUG] About to call wait_for_deletion.bat
+echo [DEBUG] Current directory: %CD%
+echo [DEBUG] DEPLOY_ALL_RUNNING flag set to: %DEPLOY_ALL_RUNNING%
+echo.
+
 call wait_for_deletion.bat
+
+echo.
+echo [DEBUG] wait_for_deletion.bat returned with error level: %ERRORLEVEL%
+
+if %ERRORLEVEL% neq 0 (
+    echo [ERROR] wait_for_deletion.bat failed with error level %ERRORLEVEL%
+    echo [DEBUG] This is likely where the crash is occurring
+    echo [DEBUG] Check the output above for specific error messages
+    pause
+    exit /b %ERRORLEVEL%
+) else (
+    echo [DEBUG] wait_for_deletion.bat completed successfully
+)
+
+REM Clear the flag
+set DEPLOY_ALL_RUNNING=
 
 REM Step 4: Deploy base infrastructure
 echo.
@@ -94,9 +118,9 @@ echo.
 echo Deploying base infrastructure...
 echo.
 
-REM Run terraform plan
+REM Run terraform plan (excluding secrets that already exist)
 echo Running terraform plan...
-terraform plan -var-file=dev.tfvars -var "%DEPLOYMENT_VAR%" -target=module.model_bucket -target=aws_secretsmanager_secret.discord_credentials -target=aws_secretsmanager_secret.openai_credentials -out tfplan
+terraform plan -var-file=dev.tfvars -var "%DEPLOYMENT_VAR%" -target=module.model_bucket -out tfplan
 
 if %ERRORLEVEL% neq 0 (
     echo.

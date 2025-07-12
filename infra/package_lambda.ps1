@@ -1,7 +1,7 @@
 # PowerShell script to package Lambda functions and upload them to S3
 
-Write-Host "ELI5 Twitter Bot - Package Lambda Functions (PowerShell)"
-Write-Host "===================================================="
+Write-Host "ELI5 Discord Bot - Package Lambda Functions (PowerShell)"
+Write-Host "====================================================="
 Write-Host ""
 Write-Host "This script will package Lambda functions and upload them to S3."
 Write-Host ""
@@ -45,17 +45,17 @@ if (Test-Path $tempDir) {
 New-Item -ItemType Directory -Path $tempDir -Force | Out-Null
 Write-Host "Temporary directory: $tempDir"
 
-# Package the Twitter bot Lambda function
+# Package the Discord bot Lambda function
 Write-Host ""
-Write-Host "Packaging Twitter bot Lambda function..."
-Write-Host "------------------------------------"
+Write-Host "Packaging Discord bot Lambda function..."
+Write-Host "-------------------------------------"
 
 # Copy source files
 Write-Host "Copying source files..."
 $scriptDir = Split-Path -Parent $MyInvocation.MyCommand.Path
 $rootDir = Split-Path -Parent $scriptDir
 Copy-Item -Path "$rootDir\src\*" -Destination $tempDir -Recurse
-Copy-Item -Path "$scriptDir\lambda_requirements\twitter_bot_requirements.txt" -Destination "$tempDir\requirements.txt"
+Copy-Item -Path "$scriptDir\lambda_requirements\discord_bot_requirements.txt" -Destination "$tempDir\requirements.txt"
 
 # Install dependencies
 Write-Host "Installing dependencies..."
@@ -83,19 +83,19 @@ Get-ChildItem -Path $tempDir -Recurse -Directory -Filter "*.egg-info" | Remove-I
 
 # Create the zip file
 Write-Host "Creating zip file..."
-$twitterBotZipPath = "$tempDir\twitter_bot.zip"
-Compress-Archive -Path "$tempDir\*" -DestinationPath $twitterBotZipPath -Force
+$discordBotZipPath = "$tempDir\discord_bot.zip"
+Compress-Archive -Path "$tempDir\*" -DestinationPath $discordBotZipPath -Force
 
 # Upload to S3
 Write-Host "Uploading to S3..."
-aws s3 cp $twitterBotZipPath "s3://$s3BucketName/lambda/twitter_bot.zip"
+aws s3 cp $discordBotZipPath "s3://$s3BucketName/lambda/discord_bot.zip"
 
 if ($LASTEXITCODE -ne 0) {
-    Write-Host "Failed to upload Twitter bot Lambda function to S3."
+    Write-Host "Failed to upload Discord bot Lambda function to S3."
     exit 1
 }
 
-Write-Host "Twitter bot Lambda function uploaded to S3."
+Write-Host "Discord bot Lambda function uploaded to S3."
 
 # Package the API Lambda function
 Write-Host ""

@@ -1,8 +1,8 @@
 #!/bin/bash
 
-# Script to configure secrets in AWS Secrets Manager for the ELI5 Twitter Bot project
+# Script to configure secrets in AWS Secrets Manager for the ELI5 Discord Bot project
 
-echo "ELI5 Twitter Bot - Secrets Configuration"
+echo "ELI5 Discord Bot - Secrets Configuration"
 echo "========================================"
 echo ""
 
@@ -35,7 +35,7 @@ APP_NAME=$(grep 'app_name' dev.tfvars | cut -d '=' -f2 | tr -d ' "')
 ENVIRONMENT=$(grep 'environment' dev.tfvars | cut -d '=' -f2 | tr -d ' "')
 
 if [ -z "$APP_NAME" ] || [ -z "$ENVIRONMENT" ]; then
-    APP_NAME="eli5-twitter-bot"  # Default app name
+    APP_NAME="eli5-discord-bot"  # Default app name
     ENVIRONMENT="dev"  # Default environment
 fi
 
@@ -43,31 +43,25 @@ echo "App Name: $APP_NAME"
 echo "Environment: $ENVIRONMENT"
 
 # Secret names
-TWITTER_SECRET_NAME="$APP_NAME/twitter-credentials-$ENVIRONMENT"
+DISCORD_SECRET_NAME="$APP_NAME/discord-credentials-$ENVIRONMENT"
 OPENAI_SECRET_NAME="$APP_NAME/openai-credentials-$ENVIRONMENT"
 
 echo ""
-echo "Configuring Twitter API credentials..."
-echo "Please enter your Twitter API credentials:"
+echo "Configuring Discord Bot credentials..."
+echo "Please enter your Discord Bot credentials:"
 
-# Prompt for Twitter API credentials
-read -p "Twitter API Key: " TWITTER_API_KEY
-read -p "Twitter API Secret: " TWITTER_API_SECRET
-read -p "Twitter Access Token: " TWITTER_ACCESS_TOKEN
-read -p "Twitter Access Token Secret: " TWITTER_ACCESS_TOKEN_SECRET
-read -p "Twitter Bearer Token: " TWITTER_BEARER_TOKEN
-read -p "Twitter Account Handle: " TWITTER_ACCOUNT_HANDLE
-read -p "Twitter User ID: " TWITTER_USER_ID
+# Prompt for Discord Bot credentials
+read -p "Discord Bot Token: " DISCORD_BOT_TOKEN
+read -p "Discord Guild ID: " DISCORD_GUILD_ID
+read -p "Discord Channel ID: " DISCORD_CHANNEL_ID
+read -p "Target User ID (bot user ID): " TARGET_USER_ID
 
-# Create Twitter credentials JSON
-TWITTER_SECRET_VALUE="{
-  \"TWITTER_API_KEY\": \"$TWITTER_API_KEY\",
-  \"TWITTER_API_SECRET\": \"$TWITTER_API_SECRET\",
-  \"TWITTER_ACCESS_TOKEN\": \"$TWITTER_ACCESS_TOKEN\",
-  \"TWITTER_ACCESS_TOKEN_SECRET\": \"$TWITTER_ACCESS_TOKEN_SECRET\",
-  \"TWITTER_BEARER_TOKEN\": \"$TWITTER_BEARER_TOKEN\",
-  \"TWITTER_ACCOUNT_HANDLE\": \"$TWITTER_ACCOUNT_HANDLE\",
-  \"TWITTER_USER_ID\": \"$TWITTER_USER_ID\"
+# Create Discord credentials JSON
+DISCORD_SECRET_VALUE="{
+  \"DISCORD_BOT_TOKEN\": \"$DISCORD_BOT_TOKEN\",
+  \"DISCORD_GUILD_ID\": \"$DISCORD_GUILD_ID\",
+  \"DISCORD_CHANNEL_ID\": \"$DISCORD_CHANNEL_ID\",
+  \"TARGET_USER_ID\": \"$TARGET_USER_ID\"
 }"
 
 echo ""
@@ -86,26 +80,50 @@ OPENAI_SECRET_VALUE="{
 echo ""
 echo "Storing secrets in AWS Secrets Manager..."
 
-echo "Storing Twitter credentials..."
+echo "Storing Discord credentials..."
+# Try to update existing secret first, if it fails, create a new one
 aws secretsmanager put-secret-value \
-  --secret-id "$TWITTER_SECRET_NAME" \
-  --secret-string "$TWITTER_SECRET_VALUE" \
-  --region "$AWS_REGION"
+  --secret-id "$DISCORD_SECRET_NAME" \
+  --secret-string "$DISCORD_SECRET_VALUE" \
+  --region "$AWS_REGION" 2>/dev/null
 
 if [ $? -ne 0 ]; then
-    echo "Failed to store Twitter credentials in AWS Secrets Manager."
-    exit 1
+    echo "Secret doesn't exist, creating new Discord credentials secret..."
+    aws secretsmanager create-secret \
+      --name "$DISCORD_SECRET_NAME" \
+      --description "Discord Bot credentials for ELI5 bot" \
+      --secret-string "$DISCORD_SECRET_VALUE" \
+      --region "$AWS_REGION"
+    
+    if [ $? -ne 0 ]; then
+        echo "Failed to create Discord credentials in AWS Secrets Manager."
+        exit 1
+    fi
+else
+    echo "Discord credentials updated successfully."
 fi
 
 echo "Storing OpenAI credentials..."
+# Try to update existing secret first, if it fails, create a new one
 aws secretsmanager put-secret-value \
   --secret-id "$OPENAI_SECRET_NAME" \
   --secret-string "$OPENAI_SECRET_VALUE" \
-  --region "$AWS_REGION"
+  --region "$AWS_REGION" 2>/dev/null
 
 if [ $? -ne 0 ]; then
-    echo "Failed to store OpenAI credentials in AWS Secrets Manager."
-    exit 1
+    echo "Secret doesn't exist, creating new OpenAI credentials secret..."
+    aws secretsmanager create-secret \
+      --name "$OPENAI_SECRET_NAME" \
+      --description "OpenAI API credentials for ELI5 bot" \
+      --secret-string "$OPENAI_SECRET_VALUE" \
+      --region "$AWS_REGION"
+    
+    if [ $? -ne 0 ]; then
+        echo "Failed to create OpenAI credentials in AWS Secrets Manager."
+        exit 1
+    fi
+else
+    echo "OpenAI credentials updated successfully."
 fi
 
 echo ""

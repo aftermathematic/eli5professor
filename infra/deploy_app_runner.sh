@@ -1,9 +1,9 @@
 #!/bin/bash
 
-# Script to deploy App Runner services for the ELI5 Twitter Bot project
+# Script to deploy App Runner services for the ELI5 Discord Bot project
 
-echo "ELI5 Twitter Bot - App Runner Deployment"
-echo "========================================"
+echo "ELI5 Discord Bot - App Runner Deployment"
+echo "========================================="
 echo ""
 
 # Check if AWS CLI is installed
@@ -86,6 +86,6 @@ echo ""
 echo "✅ App Runner services deployed successfully!"
 echo ""
 echo "You can now access your services at:"
-echo "Twitter Bot: $(terraform output -raw twitter_bot_service_url 2>/dev/null || echo "Not available")"
+echo "Discord Bot: $(terraform output -raw discord_bot_service_url 2>/dev/null || echo "Not available")"
 echo "API: $(terraform output -raw api_service_url 2>/dev/null || echo "Not available")"
 echo ""

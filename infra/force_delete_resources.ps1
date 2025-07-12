@@ -1,7 +1,7 @@
 # PowerShell script to force delete AWS resources that are causing issues
 
-Write-Host "ELI5 Twitter Bot - Force Delete Resources (PowerShell)"
-Write-Host "===================================================="
+Write-Host "ELI5 Discord Bot - Force Delete Resources (PowerShell)"
+Write-Host "====================================================="
 Write-Host ""
 Write-Host "This script will force delete AWS resources that are causing issues."
 Write-Host "WARNING: This will permanently delete resources. Make sure you understand the implications."
@@ -131,17 +131,64 @@ function Force-DeleteECRRepository {
     }
 }
 
+# Function to force delete S3 bucket and all contents
+function Force-DeleteS3Bucket {
+    param (
+        [string]$bucketName
+    )
+    
+    Write-Host "Attempting to force delete S3 bucket $bucketName..."
+    
+    try {
+        # Check if the bucket exists
+        $bucketInfo = aws s3api head-bucket --bucket $bucketName --region $awsRegion 2>$null
+        
+        if ($LASTEXITCODE -eq 0) {
+            Write-Host "S3 bucket $bucketName exists. Deleting all contents first..."
+            
+            # Delete all objects and versions
+            Write-Host "Deleting all object versions..."
+            aws s3api delete-objects --bucket $bucketName --delete "$(aws s3api list-object-versions --bucket $bucketName --query '{Objects: Versions[].{Key:Key,VersionId:VersionId}}')" --region $awsRegion 2>$null
+            
+            # Delete all delete markers
+            Write-Host "Deleting all delete markers..."
+            aws s3api delete-objects --bucket $bucketName --delete "$(aws s3api list-object-versions --bucket $bucketName --query '{Objects: DeleteMarkers[].{Key:Key,VersionId:VersionId}}')" --region $awsRegion 2>$null
+            
+            # Force delete the bucket
+            Write-Host "Deleting S3 bucket $bucketName..."
+            aws s3 rb s3://$bucketName --force --region $awsRegion
+            
+            if ($LASTEXITCODE -eq 0) {
+                Write-Host "S3 bucket $bucketName has been deleted."
+                return $true
+            } else {
+                Write-Host "Failed to delete S3 bucket $bucketName."
+                return $false
+            }
+        } else {
+            Write-Host "S3 bucket $bucketName does not exist or cannot be accessed."
+            return $true  # Consider it a success if the bucket doesn't exist
+        }
+    } catch {
+        Write-Host "Error while trying to delete S3 bucket $bucketName."
+        Write-Host $_.Exception.Message
+        return $false
+    }
+}
+
 # Define resource names
-$twitterSecretName = "eli5-twitter-bot/twitter-credentials-dev"
-$openaiSecretName = "eli5-twitter-bot/openai-credentials-dev"
-$ecrRepositoryName = "eli5-twitter-bot-dev"
+$discordSecretName = "eli5-discord-bot/discord-credentials-dev"
+$openaiSecretName = "eli5-discord-bot/openai-credentials-dev"
+$ecrRepositoryName = "eli5-discord-bot-dev"
+$s3BucketName = "eli5-twitter-bot-models-dev"  # Old bucket name that's causing conflicts
 
 # Ask for confirmation
 Write-Host ""
 Write-Host "This script will force delete the following resources:"
-Write-Host "1. Secret: $twitterSecretName"
+Write-Host "1. Secret: $discordSecretName"
 Write-Host "2. Secret: $openaiSecretName"
 Write-Host "3. ECR Repository: $ecrRepositoryName"
+Write-Host "4. S3 Bucket: $s3BucketName (and all contents)"
 Write-Host ""
 Write-Host "WARNING: This action cannot be undone. All data in these resources will be permanently deleted."
 Write-Host ""
@@ -153,20 +200,23 @@ if ($confirmation -ne "y" -and $confirmation -ne "Y") {
 }
 
 # Force delete secrets
-$twitterSecretDeleted = Force-DeleteSecret -secretName $twitterSecretName
+$discordSecretDeleted = Force-DeleteSecret -secretName $discordSecretName
 $openaiSecretDeleted = Force-DeleteSecret -secretName $openaiSecretName
 
 # Force delete ECR repository
 $ecrRepositoryDeleted = Force-DeleteECRRepository -repositoryName $ecrRepositoryName
 
+# Force delete S3 bucket
+$s3BucketDeleted = Force-DeleteS3Bucket -bucketName $s3BucketName
+
 # Summary
 Write-Host ""
 Write-Host "Force deletion summary:"
 Write-Host "----------------------"
-if ($twitterSecretDeleted) {
-    Write-Host "Twitter Secret: Deleted"
+if ($discordSecretDeleted) {
+    Write-Host "Discord Secret: Deleted"
 } else {
-    Write-Host "Twitter Secret: Failed"
+    Write-Host "Discord Secret: Failed"
 }
 
 if ($openaiSecretDeleted) {
@@ -180,9 +230,15 @@ if ($ecrRepositoryDeleted) {
 } else {
     Write-Host "ECR Repository: Failed"
 }
+
+if ($s3BucketDeleted) {
+    Write-Host "S3 Bucket: Deleted"
+} else {
+    Write-Host "S3 Bucket: Failed"
+}
 Write-Host ""
 
-if ($twitterSecretDeleted -and $openaiSecretDeleted -and $ecrRepositoryDeleted) {
+if ($discordSecretDeleted -and $openaiSecretDeleted -and $ecrRepositoryDeleted -and $s3BucketDeleted) {
     Write-Host "All resources have been successfully deleted."
     Write-Host "You can now proceed with deployment."
 } else {

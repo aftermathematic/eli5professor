@@ -87,8 +87,32 @@ Write-Host ""
 Write-Host "Checking for existing resources..."
 Write-Host ""
 
-# Run the wait_for_deletion script
+# Set flag to indicate we're running from deploy_all.ps1
+$env:DEPLOY_ALL_RUNNING = "1"
+
+# Run the wait_for_deletion script with error logging
+Write-Host "[DEBUG] About to call wait_for_deletion.ps1"
+Write-Host "[DEBUG] Current directory: $(Get-Location)"
+Write-Host "[DEBUG] DEPLOY_ALL_RUNNING flag set to: $($env:DEPLOY_ALL_RUNNING)"
+Write-Host ""
+
 & .\wait_for_deletion.ps1
+
+Write-Host ""
+Write-Host "[DEBUG] wait_for_deletion.ps1 returned with exit code: $LASTEXITCODE"
+
+if ($LASTEXITCODE -ne 0) {
+    Write-Host "[ERROR] wait_for_deletion.ps1 failed with exit code $LASTEXITCODE"
+    Write-Host "[DEBUG] This is likely where the crash is occurring"
+    Write-Host "[DEBUG] Check the output above for specific error messages"
+    Read-Host "Press Enter to continue or Ctrl+C to exit"
+    exit $LASTEXITCODE
+} else {
+    Write-Host "[DEBUG] wait_for_deletion.ps1 completed successfully"
+}
+
+# Clear the flag
+Remove-Item Env:DEPLOY_ALL_RUNNING -ErrorAction SilentlyContinue
 
 # Step 4: Deploy base infrastructure
 Write-Host ""

@@ -1,16 +1,16 @@
-# Lambda function for the Twitter bot
-module "twitter_bot_lambda" {
+# Lambda function for the Discord bot
+module "discord_bot_lambda" {
   count = local.deploy_lambda ? 1 : 0
+
   source = "./modules/lambda-function"
 
-  function_name = "${var.app_name}-twitter-bot-${var.environment}"
+  function_name = "${var.app_name}-discord-bot-${var.environment}"
   handler       = "src.main.lambda_handler"
   runtime       = "python3.9"
-  timeout       = 300  # 5 minutes
-  memory_size   = 512  # 512 MB
+  timeout       = 300
 
   s3_bucket = module.model_bucket.bucket_id
-  s3_key    = "lambda/twitter_bot.zip"
+  s3_key    = "lambda/discord_bot.zip"
 
   # Run every 15 minutes
   schedule_expression = "rate(15 minutes)"
@@ -18,13 +18,9 @@ module "twitter_bot_lambda" {
   environment_variables = {
     ENVIRONMENT = var.environment
     # Reference secrets using the format ${SECRETS_MANAGER_SECRET_NAME}:${JSON_KEY}
-    TWITTER_API_KEY             = "${aws_secretsmanager_secret.twitter_credentials.name}:TWITTER_API_KEY"
-    TWITTER_API_SECRET          = "${aws_secretsmanager_secret.twitter_credentials.name}:TWITTER_API_SECRET"
-    TWITTER_ACCESS_TOKEN        = "${aws_secretsmanager_secret.twitter_credentials.name}:TWITTER_ACCESS_TOKEN"
-    TWITTER_ACCESS_TOKEN_SECRET = "${aws_secretsmanager_secret.twitter_credentials.name}:TWITTER_ACCESS_TOKEN_SECRET"
-    TWITTER_BEARER_TOKEN        = "${aws_secretsmanager_secret.twitter_credentials.name}:TWITTER_BEARER_TOKEN"
-    TWITTER_ACCOUNT_HANDLE      = "${aws_secretsmanager_secret.twitter_credentials.name}:TWITTER_ACCOUNT_HANDLE"
-    TWITTER_USER_ID             = "${aws_secretsmanager_secret.twitter_credentials.name}:TWITTER_USER_ID"
+    DISCORD_BOT_TOKEN           = "${aws_secretsmanager_secret.discord_credentials.name}:DISCORD_BOT_TOKEN"
+    DISCORD_GUILD_ID            = "${aws_secretsmanager_secret.discord_credentials.name}:DISCORD_GUILD_ID"
+    DISCORD_CHANNEL_ID          = "${aws_secretsmanager_secret.discord_credentials.name}:DISCORD_CHANNEL_ID"
     OPENAI_API_KEY              = "${aws_secretsmanager_secret.openai_credentials.name}:OPENAI_API_KEY"
     S3_BUCKET                   = module.model_bucket.bucket_id
   }
@@ -99,14 +95,14 @@ resource "aws_lambda_permission" "api" {
 }
 
 # Outputs for Lambda functions and API Gateway
-output "twitter_bot_lambda_function_name" {
-  description = "Name of the Twitter bot Lambda function"
-  value       = local.deploy_lambda ? module.twitter_bot_lambda[0].function_name : "Not deployed"
+output "discord_bot_lambda_function_name" {
+  description = "Name of the Discord bot Lambda function"
+  value       = local.deploy_lambda ? module.discord_bot_lambda[0].function_name : "Not deployed"
 }
 
-output "twitter_bot_lambda_function_arn" {
-  description = "ARN of the Twitter bot Lambda function"
-  value       = local.deploy_lambda ? module.twitter_bot_lambda[0].function_arn : "Not deployed"
+output "discord_bot_lambda_function_arn" {
+  description = "ARN of the Discord bot Lambda function"
+  value       = local.deploy_lambda ? module.discord_bot_lambda[0].function_arn : "Not deployed"
 }
 
 output "api_lambda_function_name" {

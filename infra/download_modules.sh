@@ -2,8 +2,8 @@
 
 # Script to manually download Terraform modules
 
-echo "ELI5 Twitter Bot - Download Terraform Modules"
-echo "==========================================="
+echo "ELI5 Discord Bot - Download Terraform Modules"
+echo "============================================"
 echo ""
 echo "This script will manually download Terraform modules to fix initialization issues."
 echo ""
@@ -46,9 +46,9 @@ download_module() {
 # Download the modules
 download_module "model_bucket" "modules/s3-bucket"
 download_module "app_repository" "modules/ecr-repository"
-download_module "twitter_bot_service" "modules/apprunner-service"
+download_module "discord_bot_service" "modules/apprunner-service"
 download_module "api_service" "modules/apprunner-service"
-download_module "twitter_bot_lambda" "modules/lambda-function"
+download_module "discord_bot_lambda" "modules/lambda-function"
 download_module "api_lambda" "modules/lambda-function"
 
 # Create a modules.json file
@@ -67,7 +67,7 @@ cat > .terraform/modules/modules.json << EOF
       "Dir": "modules/ecr-repository"
     },
     {
-      "Key": "twitter_bot_service",
+      "Key": "discord_bot_service",
       "Source": "./modules/apprunner-service",
       "Dir": "modules/apprunner-service"
     },
@@ -77,7 +77,7 @@ cat > .terraform/modules/modules.json << EOF
       "Dir": "modules/apprunner-service"
     },
     {
-      "Key": "twitter_bot_lambda",
+      "Key": "discord_bot_lambda",
       "Source": "./modules/lambda-function",
       "Dir": "modules/lambda-function"
     },

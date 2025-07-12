@@ -1,0 +1,161 @@
+======================================== 
+DEPLOYMENT DEBUG LOG 
+Generated: 12/07/2025  0:43:54,15 
+======================================== 
+ 
+[SYSTEM INFO] 
+OS: Windows_NT 
+Processor: AMD64 
+User: vermeerbergenj 
+Current Directory: C:\Users\vermeerbergenj\OneDrive - delaware\Documents\EHB\Postgraduaat\MLOPS\eli5professor\infra 
+ 
+[PATH INFORMATION] 
+PATH=c:\Users\vermeerbergenj\.vscode\extensions\ms-python.python-2025.10.0-win32-x64\python_files\deactivate\powershell;C:\Users\vermeerbergenj\OneDrive - delaware\Documents\EHB\Postgraduaat\MLOPS\eli5professor\.venv\Scripts;C:\Program Files\PowerShell\7;c:\Users\vermeerbergenj\.vscode\extensions\ms-python.python-2025.10.0-win32-x64\python_files\deactivate\powershell;C:\Users\vermeerbergenj\OneDrive - delaware\Documents\EHB\Postgraduaat\MLOPS\eli5professor\.venv\Scripts;C:\Program Files (x86)\Common Files\Oracle\Java\java8path;C:\Program Files (x86)\Common Files\Oracle\Java\javapath;C:\WINDOWS\system32;C:\WINDOWS;C:\WINDOWS\System32\Wbem;C:\WINDOWS\System32\WindowsPowerShell\v1.0\;C:\WINDOWS\System32\OpenSSH\;C:\ProgramData\chocolatey\bin;C:\Program Files\dotnet\;C:\Program Files\nodejs\;C:\Program Files\Docker\Docker\resources\bin;C:\Program Files\Amazon\AWSCLIV2\;C:\Program Files\Calibre2\;C:\Program Files\PuTTY\;C:\Program Files\PowerShell\7\;C:\Program Files\Git\cmd;C:\Users\vermeerbergenj\AppData\Local\Programs\Python\Python312\Scripts\;C:\Users\vermeerbergenj\AppData\Local\Programs\Python\Python312\;C:\Users\vermeerbergenj\AppData\Local\Microsoft\WindowsApps;C:\Users\vermeerbergenj\AppData\Local\Programs\Microsoft VS Code\bin;C:\Program Files\JetBrains\IntelliJ IDEA 2022.3.1\bin;;C:\Users\vermeerbergenj\AppData\Roaming\npm;C:\Program Files\JetBrains\DataSpell 2023.3.2\bin;;C:\Users\vermeerbergenj\AppData\Local\GitHubDesktop\bin 
+ 
+[AWS CLI CHECK] 
+C:\Program Files\Amazon\AWSCLIV2\aws.exe
+C:\Users\vermeerbergenj\AppData\Local\Programs\Python\Python312\Scripts\aws
+C:\Users\vermeerbergenj\AppData\Local\Programs\Python\Python312\Scripts\aws.cmd
+aws-cli/2.15.6 Python/3.11.6 Windows/10 exe/AMD64 prompt/off
+      Name                    Value             Type    Location
+      ----                    -----             ----    --------
+   profile                <not set>             None    None
+access_key     ****************EMVS shared-credentials-file    
+secret_key     ****************kmxf shared-credentials-file    
+    region                eu-west-3      config-file    ~/.aws/config
+{
+    "UserId": "AIDAU4IIJYMJIER6E36D5",
+    "Account": "335561736978",
+    "Arn": "arn:aws:iam::335561736978:user/eli5admin"
+}
+ 
+[TERRAFORM CHECK] 
+C:\ProgramData\chocolatey\bin\terraform.exe
+Terraform v1.12.2
+on windows_amd64
++ provider registry.terraform.io/hashicorp/aws v4.67.0
+ 
+[DIRECTORY CONTENTS] 
+Contents of current directory: 
+.gitignore
+.terraform
+.terraform.lock.hcl
+app.py
+app_runner.tf
+cleanup.sh
+configure_aws.sh
+configure_secrets.sh
+debug_deployment.bat
+debug_deployment_20251207_004354.log
+debug_deployment_simple.bat
+deploy.sh
+deployment_type.tf
+deploy_all.bat
+deploy_all.ps1
+deploy_app_runner.sh
+deploy_docker.sh
+deploy_lambda.sh
+dev.tfvars
+direct_provider_download.bat
+download_modules.bat
+download_modules.ps1
+download_modules.sh
+fix_terraform_init.bat
+fix_terraform_init.ps1
+fix_terraform_init.sh
+force_cleanup.sh
+force_delete_resources.ps1
+get_rate_limit_status.py
+iam_policy.json
+lambda.tf
+lambda_requirements
+main.py
+main.tf
+model_loader.py
+modules
+outputs.tf
+package_lambda.bat
+package_lambda.ps1
+package_lambda.sh
+README.md
+requirements.txt
+setup_permissions.sh
+temp.tfvars
+terraform.tfstate
+terraform.tfstate.backup
+test_config.py
+test_llm.py
+tfplan
+update_app_runner.sh
+variables.tf
+wait_for_deletion.bat
+wait_for_deletion.ps1
+wait_for_deletion.sh
+__pycache__
+ 
+[TERRAFORM STATE] 
+.terraform directory exists 
+modules
+plugin_path
+providers
+ 
+.terraform.lock.hcl exists 
+ 
+terraform.tfstate exists 
+ 
+[AWS RESOURCES CHECK] 
+Checking Discord secret... 
+{
+    "ARN": "arn:aws:secretsmanager:eu-west-3:335561736978:secret:eli5-discord-bot/discord-credentials-dev-8Emq5E",
+    "Name": "eli5-discord-bot/discord-credentials-dev",
+    "Description": "Discord Bot credentials for ELI5 bot",
+    "LastChangedDate": "2025-07-12T00:05:56.744000+02:00",
+    "VersionIdsToStages": {
+        "72b5d3f8-ea35-480a-a3e2-06bd724ed74e": [
+            "AWSCURRENT"
+        ]
+    },
+    "CreatedDate": "2025-07-12T00:05:56.709000+02:00"
+}
+ 
+Checking OpenAI secret... 
+{
+    "ARN": "arn:aws:secretsmanager:eu-west-3:335561736978:secret:eli5-discord-bot/openai-credentials-dev-JUfB0S",
+    "Name": "eli5-discord-bot/openai-credentials-dev",
+    "Description": "OpenAI API credentials for ELI5 bot",
+    "LastChangedDate": "2025-07-12T00:05:58.855000+02:00",
+    "VersionIdsToStages": {
+        "6ea8896f-3bf3-43c6-8b6e-bd304a4a4442": [
+            "AWSCURRENT"
+        ]
+    },
+    "CreatedDate": "2025-07-12T00:05:58.819000+02:00"
+}
+ 
+Checking ECR repository... 
+{
+    "repositories": [
+        {
+            "repositoryArn": "arn:aws:ecr:eu-west-3:335561736978:repository/eli5-discord-bot-dev",
+            "registryId": "335561736978",
+            "repositoryName": "eli5-discord-bot-dev",
+            "repositoryUri": "335561736978.dkr.ecr.eu-west-3.amazonaws.com/eli5-discord-bot-dev",
+            "createdAt": "2025-07-12T00:11:57.403000+02:00",
+            "imageTagMutability": "MUTABLE",
+            "imageScanningConfiguration": {
+                "scanOnPush": true
+            },
+            "encryptionConfiguration": {
+                "encryptionType": "AES256"
+            }
+        }
+    ]
+}
+ 
+[ENVIRONMENT VARIABLES] 
+DEPLOY_ALL_RUNNING= 
+AWS_REGION= 
+ 
+======================================== 
+DEBUG LOG COMPLETE 
+======================================== 

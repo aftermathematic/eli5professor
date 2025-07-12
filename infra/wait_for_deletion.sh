@@ -2,8 +2,8 @@
 
 # Script to wait for AWS resources to be deleted
 
-echo "ELI5 Twitter Bot - Wait for Resource Deletion"
-echo "==========================================="
+echo "ELI5 Discord Bot - Wait for Resource Deletion"
+echo "============================================="
 echo ""
 echo "This script will wait for AWS resources to be deleted before proceeding with deployment."
 echo ""
@@ -92,12 +92,12 @@ wait_for_secret_deletion() {
 }
 
 # Check for secrets scheduled for deletion
-TWITTER_SECRET_NAME="eli5-twitter-bot/twitter-credentials-dev"
-OPENAI_SECRET_NAME="eli5-twitter-bot/openai-credentials-dev"
-ECR_REPOSITORY_NAME="eli5-twitter-bot-dev"
+DISCORD_SECRET_NAME="eli5-discord-bot/discord-credentials-dev"
+OPENAI_SECRET_NAME="eli5-discord-bot/openai-credentials-dev"
+ECR_REPOSITORY_NAME="eli5-discord-bot-dev"
 
-check_secret_deletion "$TWITTER_SECRET_NAME"
-TWITTER_DELETING=$?
+check_secret_deletion "$DISCORD_SECRET_NAME"
+DISCORD_DELETING=$?
 
 check_secret_deletion "$OPENAI_SECRET_NAME"
 OPENAI_DELETING=$?
@@ -106,7 +106,7 @@ check_ecr_repository "$ECR_REPOSITORY_NAME"
 ECR_EXISTS=$?
 
 # If any resources are scheduled for deletion, ask the user what to do
-if [ $TWITTER_DELETING -eq 0 ] || [ $OPENAI_DELETING -eq 0 ] || [ $ECR_EXISTS -eq 0 ]; then
+if [ $DISCORD_DELETING -eq 0 ] || [ $OPENAI_DELETING -eq 0 ] || [ $ECR_EXISTS -eq 0 ]; then
     echo ""
     echo "Some resources already exist or are scheduled for deletion."
     echo "You have the following options:"
@@ -120,15 +120,15 @@ if [ $TWITTER_DELETING -eq 0 ] || [ $OPENAI_DELETING -eq 0 ] || [ $ECR_EXISTS -e
         echo ""
         echo "Waiting for resources to be deleted..."
         
-        if [ $TWITTER_DELETING -eq 0 ]; then
+        if [ $DISCORD_DELETING -eq 0 ]; then
             echo ""
-            echo "Waiting for Twitter secret to be deleted..."
+            echo "Waiting for Discord secret to be deleted..."
             echo "This may take a long time (up to 30 days)."
             echo "Press Ctrl+C to cancel."
             
-            wait_for_secret_deletion "$TWITTER_SECRET_NAME"
+            wait_for_secret_deletion "$DISCORD_SECRET_NAME"
             if [ $? -ne 0 ]; then
-                echo "Failed to wait for Twitter secret deletion. You may need to wait longer or use the force_cleanup.sh script."
+                echo "Failed to wait for Discord secret deletion. You may need to wait longer or use the force_cleanup.sh script."
             fi
         fi
         

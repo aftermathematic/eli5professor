@@ -7,7 +7,7 @@ variable "aws_region" {
 variable "app_name" {
   description = "Name of the application"
   type        = string
-  default     = "eli5-twitter-bot"
+  default     = "eli5-discord-bot"
 }
 
 variable "environment" {

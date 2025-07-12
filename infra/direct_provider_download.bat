@@ -1,7 +1,7 @@
 @echo off
 REM Script to directly download and install the AWS provider for Terraform on Windows
 
-echo ELI5 Twitter Bot - Direct Provider Download
+echo ELI5 Discord Bot - Direct Provider Download
 echo =========================================
 echo.
 echo This script will directly download and install the AWS provider for Terraform.
