@@ -1,0 +1,50 @@
+FROM python:3.10-slim AS builder
+
+WORKDIR /app
+
+# Install dependencies
+COPY requirements.txt .
+RUN pip install --no-cache-dir --target=/app/deps \
+    fastapi \
+    uvicorn[standard] \
+    pydantic \
+    python-dotenv \
+    openai \
+    transformers \
+    pyyaml \
+    requests \
+    discord.py \
+    mlflow \
+    pandas \
+    scikit-learn && \
+    pip install --no-cache-dir --target=/app/deps torch --index-url https://download.pytorch.org/whl/cpu
+
+# Use a smaller base image for the final stage
+FROM python:3.10-slim
+
+WORKDIR /app
+
+# Copy only the necessary dependencies
+COPY --from=builder /app/deps /app/deps
+ENV PYTHONPATH=/app/deps:$PYTHONPATH
+
+# Copy source code and configuration
+COPY src/ ./src/
+COPY config/ ./config/
+COPY .env .
+COPY data/ /app/data/
+
+# Create volume mount point for persistent data
+VOLUME /app/data
+
+# Copy dataset files to the volume mount point
+RUN mkdir -p /app/data
+COPY data/dataset.csv /app/data/dataset.csv
+COPY data/eli5_dataset.csv /app/data/eli5_dataset.csv
+
+# Set environment variables
+ENV PYTHONUNBUFFERED=1
+ENV LAST_SEEN_FILE=/app/data/last_seen_id.txt
+
+# Default command to run the Discord bot with health check
+CMD ["python", "src/discord_bot_with_health.py"]

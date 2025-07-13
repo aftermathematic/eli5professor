@@ -11,7 +11,7 @@ import time
 from datetime import datetime
 from dotenv import load_dotenv
 from get_discord_mentions import main as run_discord_listener
-from post_replies import process_mentions_and_reply
+from post_replies import MentionsReader, Config as PostRepliesConfig
 
 # Load environment variables
 load_dotenv()
@@ -26,6 +26,15 @@ logging.basicConfig(
     ]
 )
 logger = logging.getLogger("discord_eli5bot_main")
+
+def process_mentions_and_reply():
+    """Process mentions using the MentionsReader class."""
+    try:
+        config = PostRepliesConfig()
+        mentions_reader = MentionsReader(config)
+        mentions_reader.process_mentions()
+    except Exception as e:
+        logger.error(f"Error processing mentions: {e}", exc_info=True)
 
 def lambda_handler(event, context):
     """
