@@ -57,5 +57,8 @@ VOLUME /app/data
 ENV PYTHONUNBUFFERED=1
 ENV LAST_SEEN_FILE=/app/data/last_seen_id.txt
 
+# Expose port 8000 for health checks
+EXPOSE 8000
+
 # Default command to run the Discord bot with health check
 CMD ["python", "src/discord_bot_with_health.py"]

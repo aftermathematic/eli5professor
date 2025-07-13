@@ -21,7 +21,7 @@ async def root():
 
 def run_health_server():
     """Run the health check server in a separate thread"""
-    uvicorn.run(app, host="0.0.0.0", port=8080, log_level="info")
+    uvicorn.run(app, host="0.0.0.0", port=8000, log_level="info")
 
 
 def run_discord_bot():
