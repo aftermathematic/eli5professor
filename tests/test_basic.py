@@ -26,6 +26,8 @@ def test_health_check_module():
         import discord_bot_with_health
         assert hasattr(discord_bot_with_health, 'app')
         assert hasattr(discord_bot_with_health, 'health_check')
+        assert hasattr(discord_bot_with_health, 'run_health_server')
+        assert hasattr(discord_bot_with_health, 'run_discord_bot')
     except ImportError as e:
         pytest.fail(f"Failed to import discord_bot_with_health: {e}")
 
