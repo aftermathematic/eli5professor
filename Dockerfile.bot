@@ -28,24 +28,30 @@ WORKDIR /app
 COPY --from=builder /app/deps /app/deps
 ENV PYTHONPATH=/app/deps:$PYTHONPATH
 
-# Copy source code and configuration
+# Copy source code (always available)
 COPY src/ ./src/
-COPY config/ ./config/
-COPY .env .
 
-# Create volume mount point for persistent data
-RUN mkdir -p /app/data
-VOLUME /app/data
+# Create directories and default files for missing components
+RUN mkdir -p /app/config /app/data
 
-# Create sample data files (these will be overridden by real data if mounted)
+# Create default .env file if not available
+RUN echo "# Default environment variables" > /app/.env && \
+    echo "DISCORD_TOKEN=your_discord_token_here" >> /app/.env && \
+    echo "OPENAI_API_KEY=your_openai_key_here" >> /app/.env && \
+    echo "ENVIRONMENT=production" >> /app/.env
+
+# Create default config files if not available
+RUN echo "# Default configuration" > /app/config/default.yml
+
+# Create sample data files
 RUN echo "question,answer" > /app/data/eli5_dataset.csv && \
     echo "What is AI?,Artificial Intelligence is computer systems that can perform tasks that typically require human intelligence." >> /app/data/eli5_dataset.csv && \
     echo "id,text,label" > /app/data/dataset.csv && \
     echo "1,Sample text,sample" >> /app/data/dataset.csv && \
     echo "0" > /app/data/last_seen_id.txt
 
-# Copy actual data files if they exist (this will override the sample data)
-COPY data/ /app/data/
+# Set up volume mount point for persistent data
+VOLUME /app/data
 
 # Set environment variables
 ENV PYTHONUNBUFFERED=1
