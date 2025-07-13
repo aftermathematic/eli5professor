@@ -83,19 +83,35 @@ jobs:
       run: |
         # App Runner automatically detects new images with 'latest' tag
         # Force a new deployment by updating the service
-        aws apprunner start-deployment --service-arn ${{ env.APP_RUNNER_SERVICE_ARN }}
+        echo "Starting App Runner deployment..."
+        OPERATION_OUTPUT=$(aws apprunner start-deployment --service-arn ${{ env.APP_RUNNER_SERVICE_ARN }})
+        OPERATION_ID=$(echo $OPERATION_OUTPUT | jq -r '.OperationId')
+        echo "Operation ID: $OPERATION_ID"
         
-        # Wait for deployment to complete
+        # Wait for deployment to complete (manual polling since no wait command exists)
         echo "Waiting for App Runner deployment to complete..."
-        aws apprunner wait service-operation-completed --service-arn ${{ env.APP_RUNNER_SERVICE_ARN }}
+        for i in {1..30}; do
+          sleep 30
+          STATUS=$(aws apprunner describe-service --service-arn ${{ env.APP_RUNNER_SERVICE_ARN }} --query 'Service.Status' --output text)
+          echo "App Runner service status: $STATUS (attempt $i/30)"
+          
+          if [ "$STATUS" = "RUNNING" ]; then
+            echo "✅ Discord bot deployment successful!"
+            break
+          elif [ "$STATUS" = "OPERATION_IN_PROGRESS" ]; then
+            echo "Deployment still in progress..."
+            continue
+          else
+            echo "❌ Discord bot deployment failed with status: $STATUS"
+            exit 1
+          fi
+          
+          if [ $i -eq 30 ]; then
+            echo "❌ Deployment timeout after 15 minutes"
+            exit 1
+          fi
+        done
         
-        # Get final status
-        STATUS=$(aws apprunner describe-service --service-arn ${{ env.APP_RUNNER_SERVICE_ARN }} --query 'Service.Status' --output text)
-        echo "App Runner service status: $STATUS"
-        
-        if [ "$STATUS" = "RUNNING" ]; then
-          echo "✅ Discord bot deployment successful!"
-        else
-          echo "❌ Discord bot deployment failed with status: $STATUS"
-          exit 1
-        fi
+        # Final status check
+        FINAL_STATUS=$(aws apprunner describe-service --service-arn ${{ env.APP_RUNNER_SERVICE_ARN }} --query 'Service.Status' --output text)
+        echo "Final App Runner service status: $FINAL_STATUS"
