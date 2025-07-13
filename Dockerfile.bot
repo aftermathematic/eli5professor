@@ -37,7 +37,14 @@ COPY .env .
 RUN mkdir -p /app/data
 VOLUME /app/data
 
-# Copy dataset files to the volume mount point
+# Create sample data files (these will be overridden by real data if mounted)
+RUN echo "question,answer" > /app/data/eli5_dataset.csv && \
+    echo "What is AI?,Artificial Intelligence is computer systems that can perform tasks that typically require human intelligence." >> /app/data/eli5_dataset.csv && \
+    echo "id,text,label" > /app/data/dataset.csv && \
+    echo "1,Sample text,sample" >> /app/data/dataset.csv && \
+    echo "0" > /app/data/last_seen_id.txt
+
+# Copy actual data files if they exist (this will override the sample data)
 COPY data/ /app/data/
 
 # Set environment variables

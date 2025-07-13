@@ -1,0 +1,63 @@
+# Docker ignore file
+# Include everything except these patterns
+
+# Ignore git files
+.git
+.gitignore
+
+# Ignore development files
+.vscode/
+.idea/
+*.md
+README.md
+
+# Ignore build artifacts
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+
+# Ignore test files
+.coverage
+.tox/
+.nox/
+.cache/
+pytest_cache/
+nosetests.xml
+coverage.xml
+*.cover
+
+# Ignore virtual environments
+venv/
+ENV/
+env/
+.venv/
+
+# Ignore Terraform files
+*.tfstate
+*.tfstate.*
+.terraform/
+.terraform.d/
+
+# Ignore logs
+*.log
+
+# BUT DO NOT ignore data/ directory - we need it for the Docker build
+# (This overrides the .gitignore)
+!data/
