@@ -1,0 +1,9 @@
+# Template file for Discord bot configuration
+# Copy this to discord.tfvars and fill in your actual values
+# NEVER commit discord.tfvars to git!
+
+discord_bot_token    = "YOUR_DISCORD_BOT_TOKEN_HERE"
+discord_channel_id   = "1386452379733594145"
+discord_server_id    = "1386452379733594142"
+target_user_id       = "1386466983276576870"
+openai_api_key       = "YOUR_OPENAI_API_KEY_HERE"
