@@ -8,7 +8,7 @@ on:
 
 env:
   AWS_REGION: eu-west-3
-  ECR_REPOSITORY: eli5-discord-bot-bot-dev
+  ECR_REPOSITORY: eli5-discord-bot-dev
   APP_RUNNER_SERVICE_ARN: arn:aws:apprunner:eu-west-3:335561736978:service/eli5-discord-bot-discord-bot-dev/a5592aca377042f5805c7595bd63a2a8
 
 jobs:
