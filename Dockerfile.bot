@@ -32,15 +32,13 @@ ENV PYTHONPATH=/app/deps:$PYTHONPATH
 COPY src/ ./src/
 COPY config/ ./config/
 COPY .env .
-COPY data/ /app/data/
 
 # Create volume mount point for persistent data
+RUN mkdir -p /app/data
 VOLUME /app/data
 
 # Copy dataset files to the volume mount point
-RUN mkdir -p /app/data
-COPY data/dataset.csv /app/data/dataset.csv
-COPY data/eli5_dataset.csv /app/data/eli5_dataset.csv
+COPY data/ /app/data/
 
 # Set environment variables
 ENV PYTHONUNBUFFERED=1
