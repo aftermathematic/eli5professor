@@ -78,14 +78,14 @@ class Config:
         
         # Prompt configuration
         self.ELI5_PROMPT_TEMPLATE = self._get_config('prompts.eli5_prompt_template', """
-Explain the following like I'm 5 years old. Keep it under 260 characters:
+Explain the following like I'm 5 years old. Keep it under 260 characters and use a sarcastic, slightly condescending tone:
 {subject}
 
 End your response with '#ELI5'
 """)
         
         self.SYSTEM_PROMPT = self._get_config('prompts.system_prompt', 
-                                             "You are an assistant that explains concepts to 5-year-olds. Mimic the style and tone of the examples provided. Keep responses under 260 characters and end with #ELI5.")
+                                             "You are a sarcastic, slightly condescending assistant that explains concepts to 5-year-olds. Mimic the passive-aggressive, sarcastic style and tone of the examples provided. Be witty and slightly insulting while still being educational. Keep responses under 260 characters and end with #ELI5.")
         
         # API configuration
         self.MAX_RESPONSE_LENGTH = int(self._get_config('api.max_response_length', 280))
@@ -345,7 +345,7 @@ class LLMClient:
         return self._format_response(explanation, max_length)
     
     def _generate_with_local_model(self, prompt: str, max_length: Optional[int] = None) -> str:
-        """Generate response using local Hugging Face model."""
+        """Generate response using the loaded dataset examples."""
         # Extract the subject from the prompt
         try:
             subject = prompt.split("Explain the following like I'm 5 years old.")[1].split("End your response")[0].strip()
@@ -357,37 +357,37 @@ class LLMClient:
         
         logger.info(f"Extracted subject for local model: '{subject}'")
         
-        # For Star Wars, provide a specific response
-        if "star wars" in subject.lower():
-            return "You haven't seen Star Wars? It's the movie with space wizards and laser swords. It's okay, not everyone has taste. #ELI5"
+        # First, try to find an exact match in the dataset
+        subject_lower = subject.lower()
+        for example in self.dataset_loader.examples:
+            if example['term'].lower() == subject_lower:
+                logger.info(f"Found exact match for '{subject}' in dataset")
+                return self._format_response(example['explanation'], max_length)
         
-        # For other subjects, provide generic responses based on the subject
-        if "gravity" in subject.lower():
-            return "Gravity? It's just what keeps you from floating away. Not rocket science... well, actually it kind of is. #ELI5"
-        elif "internet" in subject.lower():
-            return "The internet is where people argue with strangers and look at cat videos. You're using it right now, genius. #ELI5"
-        elif "computer" in subject.lower():
-            return "A computer is that box you stare at all day. It does everything except make you actually productive. #ELI5"
-        elif "sun" in subject.lower() or "solar" in subject.lower():
-            return "The Sun is that bright thing in the sky you apparently never look at. It's hot, it's bright, it's kind of important. #ELI5"
-        elif "elon" in subject.lower() or "musk" in subject.lower():
-            return "Elon Musk? Just a guy who tweets a lot and sometimes builds rockets. Not like he's changing the world or anything. #ELI5"
-        elif "new york" in subject.lower() or "nyc" in subject.lower():
-            return "New York is just a place with tall buildings where people pay too much for tiny apartments and pretend to be important. #ELI5"
-        elif "nasa" in subject.lower() or "space" in subject.lower():
-            return "NASA just sends people to space and stuff. No big deal, just the most amazing exploration humans have ever done. #ELI5"
+        # If no exact match, try partial matches
+        for example in self.dataset_loader.examples:
+            if subject_lower in example['term'].lower() or example['term'].lower() in subject_lower:
+                logger.info(f"Found partial match for '{subject}' with '{example['term']}' in dataset")
+                return self._format_response(example['explanation'], max_length)
         
-        # Generate sarcastic responses for common topics
-        generic_responses = [
-            f"{subject}? Oh, just that thing everyone knows about except you, apparently. Don't worry, you'll catch up someday. #ELI5",
-            f"Wow, you don't know about {subject}? It's only like, the most basic thing ever. But sure, I'll explain it to your five-year-old brain. #ELI5",
-            f"{subject} is that thing people talk about when they want to sound smart at parties. Not that you'd know anything about that. #ELI5",
-            f"Really? {subject}? It's just the thing that everyone learned about in kindergarten. But I guess you were absent that day. #ELI5",
-            f"{subject} is what people with actual hobbies are into. Maybe try looking up from your phone sometime. #ELI5"
-        ]
+        # If no match found in dataset, use a random example as a template and create a similar response
+        if self.dataset_loader.examples:
+            random_example = random.choice(self.dataset_loader.examples)
+            logger.info(f"No match found for '{subject}', using template style from '{random_example['term']}'")
+            
+            # Create a response in the same sarcastic style as the dataset
+            sarcastic_responses = [
+                f"Oh, {subject}? Just that incredibly important concept that everyone except you seems to understand. It's fundamental knowledge that shapes how we see the world, but don't worry—ignorance is bliss, right? #ELI5",
+                f"Seriously? You don't know about {subject}? It's only one of the most basic things people learn about, but I guess you were too busy scrolling through social media to pay attention in school. #ELI5",
+                f"{subject} is something that actually matters in the real world, unlike most of your daily activities. It's the kind of knowledge that separates informed people from... well, you. But sure, I'll break it down. #ELI5",
+                f"Wow, asking about {subject}? That's like asking what water is—it's so fundamental that most people just know it. But hey, everyone starts somewhere, even if that somewhere is embarrassingly late. #ELI5",
+                f"{subject}? Oh, just that thing that people with actual curiosity about the world already understand. It's fascinating stuff, though I doubt you'll retain much of this explanation anyway. #ELI5"
+            ]
+            
+            return self._format_response(random.choice(sarcastic_responses), max_length)
         
-        # Return a random generic response
-        return random.choice(generic_responses)
+        # Final fallback if no dataset is available
+        return f"Sorry, I couldn't explain '{subject}' right now. Try again later! #ELI5"
     
     def _format_response(self, explanation: str, max_length: Optional[int] = None) -> str:
         """Format the explanation and add hashtag if needed."""
