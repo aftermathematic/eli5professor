@@ -137,8 +137,29 @@ class DiscordListener:
 
         self.client = discord.Client(intents=intents)
         self.processed_messages: Set[str] = set()
+        self.processed_messages_file = '/tmp/discord_processed_messages.txt'
         self.last_check_time = datetime.now()
+        self.load_processed_messages()
         self.setup_event_handlers()
+
+    def load_processed_messages(self) -> None:
+        """Load previously processed message IDs from file."""
+        try:
+            if os.path.exists(self.processed_messages_file):
+                with open(self.processed_messages_file, 'r') as f:
+                    self.processed_messages = set(line.strip() for line in f if line.strip())
+                logger.info(f"Loaded {len(self.processed_messages)} previously processed message IDs")
+        except Exception as e:
+            logger.error(f"Error loading processed messages: {e}")
+            self.processed_messages = set()
+
+    def save_processed_message(self, message_id: str) -> None:
+        """Save a processed message ID to file."""
+        try:
+            with open(self.processed_messages_file, 'a') as f:
+                f.write(f"{message_id}\n")
+        except Exception as e:
+            logger.error(f"Error saving processed message ID {message_id}: {e}")
 
     def was_target_mentioned(self, message: discord.Message) -> bool:
         """
@@ -253,6 +274,9 @@ class DiscordListener:
                         keyword=keyword
                     )
                     self.processed_messages.add(str(message.id))
+                    self.save_processed_message(str(message.id))
+                else:
+                    logger.debug(f"[DUPLICATE SKIPPED] Message {message.id} already processed")
 
     async def check_for_mentions(self) -> None:
         """Check for mentions in the target channel (history scan)."""
