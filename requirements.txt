@@ -28,3 +28,6 @@ aiohttp>=3.8.0
 
 # Discord integration
 discord.py>=2.0.0
+
+# AWS integration
+boto3>=1.26.0
