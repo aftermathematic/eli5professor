@@ -11,7 +11,7 @@ app = FastAPI()
 
 @app.get("/health")
 async def health_check():
-    return {"status": "healthy", "service": "discord-bot"}
+    return {"status": "healthy", "service": "discord-bot", "version": "1.0.1", "deployment_test": "ci-cd-pipeline-test"}
 
 
 @app.get("/")
