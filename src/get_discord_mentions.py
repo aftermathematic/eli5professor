@@ -33,19 +33,56 @@ class Config:
         self.MENTIONS_CSV = 'mentions.csv'
         self.CHECK_INTERVAL_SECONDS = 20
         self.TARGET_MENTION = 'eliprofessor'
+        
+        # Load credentials from AWS Secrets Manager or environment variables
+        self._load_credentials()
+
+    def _load_credentials(self):
+        """Load Discord credentials from AWS Secrets Manager or environment variables."""
+        # First try environment variables (for local development)
         self.DISCORD_TOKEN = os.getenv('DISCORD_BOT_TOKEN')
         self.DISCORD_CHANNEL_ID = int(os.getenv('DISCORD_CHANNEL_ID', '0'))
         self.DISCORD_SERVER_ID = int(os.getenv('DISCORD_SERVER_ID', '0'))
         self.TARGET_USER_ID = int(os.getenv('TARGET_USER_ID', '0'))
-
+        
+        # If environment variables are not set, try AWS Secrets Manager
+        if not self.DISCORD_TOKEN or self.DISCORD_CHANNEL_ID == 0:
+            try:
+                logger.info("Loading Discord credentials from AWS Secrets Manager...")
+                import boto3
+                import json
+                
+                session = boto3.Session()
+                secrets_client = session.client('secretsmanager', region_name='eu-west-3')
+                
+                response = secrets_client.get_secret_value(
+                    SecretId='eli5-discord-bot/discord-credentials-dev'
+                )
+                
+                credentials = json.loads(response['SecretString'])
+                
+                self.DISCORD_TOKEN = credentials.get('DISCORD_BOT_TOKEN')
+                self.DISCORD_CHANNEL_ID = int(credentials.get('DISCORD_CHANNEL_ID', '0'))
+                self.DISCORD_SERVER_ID = int(credentials.get('DISCORD_SERVER_ID', '0'))
+                self.TARGET_USER_ID = int(credentials.get('TARGET_USER_ID', '0'))
+                
+                logger.info("✅ Successfully loaded Discord credentials from AWS Secrets Manager")
+                
+            except Exception as e:
+                logger.error(f"Failed to load credentials from AWS Secrets Manager: {e}")
+                # Continue with environment variables if they exist
+        
+        # Validate required credentials
         if not self.DISCORD_TOKEN:
-            raise ValueError("DISCORD_BOT_TOKEN environment variable is required")
+            raise ValueError("DISCORD_BOT_TOKEN not found in environment variables or AWS Secrets Manager")
         if self.DISCORD_CHANNEL_ID == 0:
-            raise ValueError("DISCORD_CHANNEL_ID environment variable is required")
+            raise ValueError("DISCORD_CHANNEL_ID not found in environment variables or AWS Secrets Manager")
         if self.DISCORD_SERVER_ID == 0:
-            raise ValueError("DISCORD_SERVER_ID environment variable is required")
+            raise ValueError("DISCORD_SERVER_ID not found in environment variables or AWS Secrets Manager")
         if self.TARGET_USER_ID == 0:
-            raise ValueError("TARGET_USER_ID environment variable is required")
+            raise ValueError("TARGET_USER_ID not found in environment variables or AWS Secrets Manager")
+            
+        logger.info(f"Using Discord credentials - Channel: {self.DISCORD_CHANNEL_ID}, Server: {self.DISCORD_SERVER_ID}, Target User: {self.TARGET_USER_ID}")
 
 class MentionsWriter:
     """Class to write mentions to a CSV file."""

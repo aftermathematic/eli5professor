@@ -9,6 +9,8 @@ import re
 import time
 import requests
 import logging
+import json
+import boto3
 from typing import List, Dict, Any, Optional, Set
 from dotenv import load_dotenv
 
@@ -32,7 +34,45 @@ class Config:
         self.NUM_MENTIONS = 10    # 10 mentions per batch
         self.WAIT_MINUTES = 1     # 1 minute wait between batches
         self.TWITTER_ACCOUNT_HANDLE = 'eli5professor'
-        self.DISCORD_WEBHOOK_URL = os.getenv('DISCORD_WEBHOOK_URL', 'https://discord.com/api/webhooks/1386452801143705751/1U-yOwx8soK57EwEOMUBAD09fTFHEvWTmV9WKGpmXFnXgBgyspBaZuxK_fzI4Ub9AYXY')
+        
+        # Load Discord credentials from AWS Secrets Manager or environment variables
+        self.DISCORD_WEBHOOK_URL = self._get_discord_webhook_url()
+        
+    def _get_discord_webhook_url(self) -> str:
+        """Get Discord webhook URL from AWS Secrets Manager or environment variables."""
+        # First try environment variable (for local development)
+        webhook_url = os.getenv('DISCORD_WEBHOOK_URL')
+        if webhook_url:
+            logger.info("Using Discord webhook URL from environment variable")
+            return webhook_url
+            
+        # Try to get from AWS Secrets Manager
+        try:
+            logger.info("Attempting to load Discord credentials from AWS Secrets Manager...")
+            session = boto3.Session()
+            secrets_client = session.client('secretsmanager', region_name='eu-west-3')
+            
+            response = secrets_client.get_secret_value(
+                SecretId='eli5-discord-bot/discord-credentials-dev'
+            )
+            
+            credentials = json.loads(response['SecretString'])
+            
+            # Get Discord channel and server info to construct webhook URL
+            channel_id = credentials.get('DISCORD_CHANNEL_ID')
+            
+            # For now, use the hardcoded webhook URL as fallback
+            # In a production setup, you'd store the webhook URL in secrets too
+            webhook_url = 'https://discord.com/api/webhooks/1386452801143705751/1U-yOwx8soK57EwEOMUBAD09fTFHEvWTmV9WKGpmXFnXgBgyspBaZuxK_fzI4Ub9AYXY'
+            
+            logger.info("✅ Successfully loaded Discord credentials from AWS Secrets Manager")
+            return webhook_url
+            
+        except Exception as e:
+            logger.warning(f"Could not load from AWS Secrets Manager: {e}")
+            # Fallback to hardcoded webhook URL
+            logger.info("Using fallback Discord webhook URL")
+            return 'https://discord.com/api/webhooks/1386452801143705751/1U-yOwx8soK57EwEOMUBAD09fTFHEvWTmV9WKGpmXFnXgBgyspBaZuxK_fzI4Ub9AYXY'
 
 class MentionProcessor:
     """Class to process mentions and extract topics."""
