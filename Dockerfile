@@ -32,13 +32,13 @@ ENV PYTHONPATH=/app/deps:$PYTHONPATH
 COPY src/ ./src/
 COPY config/ ./config/
 COPY .env .
+
+# Ensure data directory exists and copy dataset
+RUN mkdir -p /app/data
 COPY data/ /app/data/
 
-# Create volume mount point for persistent data
-VOLUME /app/data
-
-# Ensure data directory exists
-RUN mkdir -p /app/data
+# Verify the dataset file is copied
+RUN ls -la /app/data/ && echo "Dataset file contents:" && head -5 /app/data/dataset.csv || echo "Dataset file not found"
 
 # Set environment variables
 ENV PYTHONUNBUFFERED=1
