@@ -54,6 +54,11 @@ output "discord_bot_service_ecr_role_arn" {
   value       = local.deploy_app_runner ? module.discord_bot_service[0].ecr_access_role_arn : "Not deployed"
 }
 
+output "discord_bot_service_instance_role_arn" {
+  description = "ARN of the instance role for the Discord bot service"
+  value       = local.deploy_app_runner ? module.discord_bot_service[0].instance_role_arn : "Not deployed"
+}
+
 output "api_service_url" {
   description = "URL of the App Runner API service"
   value       = local.deploy_app_runner ? module.api_service[0].service_url : "Not deployed"

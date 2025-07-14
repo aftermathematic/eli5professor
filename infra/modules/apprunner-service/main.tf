@@ -23,8 +23,9 @@ resource "aws_apprunner_service" "this" {
 
   # Add instance configuration for better performance
   instance_configuration {
-    cpu    = "1 vCPU"
-    memory = "2 GB"
+    cpu               = "1 vCPU"
+    memory            = "2 GB"
+    instance_role_arn = aws_iam_role.apprunner_instance.arn
   }
 
   tags = var.tags
@@ -52,6 +53,49 @@ resource "aws_iam_role" "apprunner_ecr_access" {
 resource "aws_iam_role_policy_attachment" "apprunner_ecr_access" {
   role       = aws_iam_role.apprunner_ecr_access.name
   policy_arn = "arn:aws:iam::aws:policy/service-role/AWSAppRunnerServicePolicyForECRAccess"
+}
+
+# Instance role for App Runner service to access AWS services
+resource "aws_iam_role" "apprunner_instance" {
+  name = "${var.service_name}-instance-role"
+
+  assume_role_policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [
+      {
+        Action = "sts:AssumeRole"
+        Effect = "Allow"
+        Principal = {
+          Service = "tasks.apprunner.amazonaws.com"
+        }
+      }
+    ]
+  })
+
+  tags = var.tags
+}
+
+# Policy for accessing Secrets Manager
+resource "aws_iam_role_policy" "apprunner_secrets_access" {
+  name = "${var.service_name}-secrets-access"
+  role = aws_iam_role.apprunner_instance.id
+
+  policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [
+      {
+        Effect = "Allow"
+        Action = [
+          "secretsmanager:GetSecretValue",
+          "secretsmanager:DescribeSecret"
+        ]
+        Resource = [
+          "arn:aws:secretsmanager:*:*:secret:eli5-*",
+          "arn:aws:secretsmanager:*:*:secret:openai-*"
+        ]
+      }
+    ]
+  })
 }
 
 # ECR access role ARN is exposed via outputs.tf

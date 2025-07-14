@@ -9,6 +9,11 @@ output "service_arn" {
 }
 
 output "ecr_access_role_arn" {
-  description = "ARN of the IAM role for ECR access"
+  description = "ARN of the ECR access role"
   value       = aws_iam_role.apprunner_ecr_access.arn
+}
+
+output "instance_role_arn" {
+  description = "ARN of the instance role"
+  value       = aws_iam_role.apprunner_instance.arn
 }
