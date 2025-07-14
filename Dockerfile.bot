@@ -10,7 +10,8 @@ RUN pip install --no-cache-dir --target=/app/deps \
     pydantic \
     python-dotenv \
     requests \
-    discord.py
+    discord.py \
+    boto3
 
 # Use a smaller base image for the final stage
 FROM python:3.10-slim
