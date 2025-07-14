@@ -40,13 +40,21 @@ class Config:
     def _load_credentials(self):
         """Load Discord credentials from AWS Secrets Manager or environment variables."""
         # First try environment variables (for local development)
-        self.DISCORD_TOKEN = os.getenv('DISCORD_BOT_TOKEN')
-        self.DISCORD_CHANNEL_ID = int(os.getenv('DISCORD_CHANNEL_ID', '0'))
-        self.DISCORD_SERVER_ID = int(os.getenv('DISCORD_SERVER_ID', '0'))
-        self.TARGET_USER_ID = int(os.getenv('TARGET_USER_ID', '0'))
+        discord_token_env = os.getenv('DISCORD_BOT_TOKEN')
+        discord_channel_env = os.getenv('DISCORD_CHANNEL_ID', '0')
+        discord_server_env = os.getenv('DISCORD_SERVER_ID', '0')
+        target_user_env = os.getenv('TARGET_USER_ID', '0')
         
-        # If environment variables are not set, try AWS Secrets Manager
-        if not self.DISCORD_TOKEN or self.DISCORD_CHANNEL_ID == 0:
+        # Check if environment variables contain AWS Secrets Manager references
+        def is_secret_reference(value):
+            return value and ':' in value and ('eli5-' in value or 'openai-' in value)
+        
+        # If environment variables contain secret references or are not set, use AWS Secrets Manager
+        if (is_secret_reference(discord_token_env) or 
+            is_secret_reference(discord_channel_env) or 
+            is_secret_reference(discord_server_env) or 
+            is_secret_reference(target_user_env) or
+            not discord_token_env or discord_channel_env == '0'):
             try:
                 logger.info("Loading Discord credentials from AWS Secrets Manager...")
                 import boto3
@@ -70,7 +78,14 @@ class Config:
                 
             except Exception as e:
                 logger.error(f"Failed to load credentials from AWS Secrets Manager: {e}")
-                # Continue with environment variables if they exist
+                raise  # Don't continue with invalid secret references
+        else:
+            # Use environment variables directly (for local development)
+            self.DISCORD_TOKEN = discord_token_env
+            self.DISCORD_CHANNEL_ID = int(discord_channel_env)
+            self.DISCORD_SERVER_ID = int(discord_server_env)
+            self.TARGET_USER_ID = int(target_user_env)
+            logger.info("Using Discord credentials from environment variables")
         
         # Validate required credentials
         if not self.DISCORD_TOKEN:
