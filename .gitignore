@@ -81,3 +81,11 @@ Thumbs.db
 video_script_presentation.txt
 
 .terraform.d/plugins/
+
+# Terraform
+*.tfstate
+*.tfstate.*
+*.tfvars
+!*.tfvars.template
+.terraform/
+.terraform.lock.hcl
