@@ -77,4 +77,7 @@ coverage.xml
 # System files
 Thumbs.db
 
+# Video presentation script (not for GitHub)
+video_script_presentation.txt
+
 .terraform.d/plugins/
