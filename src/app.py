@@ -265,6 +265,43 @@ class LLMClient:
         
         # Initialize MLflow tracker
         self.mlflow_tracker = MLflowTracker(config)
+        
+        # Initialize response cache to ensure deterministic responses
+        self.response_cache = {}
+        self.cache_file_path = '/tmp/eli5_response_cache.json'
+        self._load_response_cache()
+    
+    def _load_response_cache(self) -> None:
+        """Load response cache from file."""
+        try:
+            if os.path.exists(self.cache_file_path):
+                import json
+                with open(self.cache_file_path, 'r') as f:
+                    self.response_cache = json.load(f)
+                logger.info(f"Loaded {len(self.response_cache)} cached responses")
+            else:
+                self.response_cache = {}
+                logger.info("No cache file found, starting with empty cache")
+        except Exception as e:
+            logger.error(f"Error loading response cache: {e}")
+            self.response_cache = {}
+    
+    def _save_response_cache(self) -> None:
+        """Save response cache to file."""
+        try:
+            import json
+            with open(self.cache_file_path, 'w') as f:
+                json.dump(self.response_cache, f, indent=2)
+            logger.debug(f"Saved {len(self.response_cache)} responses to cache")
+        except Exception as e:
+            logger.error(f"Error saving response cache: {e}")
+    
+    def _get_cache_key(self, subject: str, max_length: Optional[int] = None) -> str:
+        """Generate a cache key for the subject and max_length."""
+        # Normalize the subject (lowercase, strip whitespace)
+        normalized_subject = subject.lower().strip()
+        max_len = max_length if max_length is not None else self.config.MAX_RESPONSE_LENGTH
+        return f"{normalized_subject}:{max_len}"
     
     def _create_openai_client(self):
         """Create a fresh OpenAI client for each request."""
@@ -272,7 +309,7 @@ class LLMClient:
     
     def generate_eli5_response(self, subject: str, max_length: Optional[int] = None) -> str:
         """
-        Generate an ELI5 explanation for the given subject with MLflow tracking.
+        Generate an ELI5 explanation for the given subject with MLflow tracking and caching.
         
         Args:
             subject: The topic to explain
@@ -287,6 +324,17 @@ class LLMClient:
         explanation = ""
         
         try:
+            # Check cache first for deterministic responses
+            cache_key = self._get_cache_key(subject, max_length)
+            if cache_key in self.response_cache:
+                explanation = self.response_cache[cache_key]
+                model_used = "cached"
+                success = True
+                logger.info(f"✅ Cache hit for subject '{subject}' - returning cached response")
+                return explanation
+            
+            logger.info(f"🔍 Cache miss for subject '{subject}' - generating new response")
+            
             # Format the prompt
             prompt = self.config.ELI5_PROMPT_TEMPLATE.format(subject=subject)
             
@@ -320,6 +368,12 @@ class LLMClient:
             if not success:
                 explanation = f"Sorry, I couldn't explain '{subject}' right now. Try again later! #ELI5"
                 model_used = "all_failed"
+            
+            # Cache the response for future requests (only cache successful responses)
+            if success and explanation:
+                self.response_cache[cache_key] = explanation
+                self._save_response_cache()
+                logger.info(f"💾 Cached response for subject '{subject}'")
             
         finally:
             # Always log to MLflow
