@@ -90,10 +90,14 @@ class DiscordListener:
 
     def was_target_mentioned(self, message: discord.Message) -> bool:
         """
-        Detects if the target user ID is mentioned AND the message contains #eli5 hashtag.
+        Detects if the bot itself is mentioned AND the message contains #eli5 hashtag.
         """
+        # Check if the bot itself is mentioned
+        bot_mentioned = self.client.user in message.mentions if self.client.user else False
+        
+        # Also check for the configured TARGET_USER_ID as fallback
         target_id = self.config.TARGET_USER_ID
-        mentioned = (
+        target_mentioned = (
             any(u.id == target_id for u in message.mentions) or
             f"<@{target_id}>" in message.content or
             f"<@!{target_id}>" in message.content
@@ -102,11 +106,14 @@ class DiscordListener:
         # Check for #eli5 hashtag (case insensitive)
         has_eli5_hashtag = "#eli5" in message.content.lower()
         
-        # Both conditions must be true
+        # Bot mentioned OR target mentioned, AND has #eli5 hashtag
+        mentioned = bot_mentioned or target_mentioned
         valid_mention = mentioned and has_eli5_hashtag
         
         logger.debug(f"[mention detection] mentions: {[(u.name, u.id) for u in message.mentions]}, "
-                     f"TARGET_USER_ID: {target_id}, Mentioned? {mentioned}, Has #eli5? {has_eli5_hashtag}, Valid? {valid_mention}")
+                     f"bot_id: {self.client.user.id if self.client.user else 'None'}, "
+                     f"TARGET_USER_ID: {target_id}, Bot mentioned? {bot_mentioned}, "
+                     f"Target mentioned? {target_mentioned}, Has #eli5? {has_eli5_hashtag}, Valid? {valid_mention}")
         return valid_mention
 
     def extract_keyword(self, message: discord.Message) -> str:
@@ -114,11 +121,43 @@ class DiscordListener:
         Remove the mention (e.g., <@1298992235148218481> or <@!1298992235148218481>)
         and return the remaining text stripped.
         """
+        content = message.content
+        
+        # Remove bot mention if present
+        if self.client.user:
+            bot_id = self.client.user.id
+            bot_pattern = re.compile(rf'<@!?\s*{bot_id}>\s*')
+            content = bot_pattern.sub('', content)
+        
+        # Also remove TARGET_USER_ID mention as fallback
         target_id = self.config.TARGET_USER_ID
-        # Remove <@ID> or <@!ID> with optional whitespace
-        pattern = re.compile(rf'<@!?\s*{target_id}>\s*')
-        keyword = pattern.sub('', message.content).strip()
-        return keyword
+        target_pattern = re.compile(rf'<@!?\s*{target_id}>\s*')
+        content = target_pattern.sub('', content)
+        
+        return content.strip()
+
+    async def set_bot_avatar_if_needed(self) -> None:
+        """Set the bot's avatar if it doesn't have one."""
+        try:
+            if self.client.user and not self.client.user.avatar:
+                logger.info("Bot has no avatar set, attempting to set one...")
+                
+                # Use a simple professor/academic icon
+                avatar_url = "https://cdn-icons-png.flaticon.com/512/3135/3135715.png"
+                
+                import aiohttp
+                async with aiohttp.ClientSession() as session:
+                    async with session.get(avatar_url) as resp:
+                        if resp.status == 200:
+                            avatar_data = await resp.read()
+                            await self.client.user.edit(avatar=avatar_data)
+                            logger.info("Successfully set bot avatar!")
+                        else:
+                            logger.warning(f"Failed to download avatar image: {resp.status}")
+            else:
+                logger.info("Bot already has an avatar set")
+        except Exception as e:
+            logger.warning(f"Could not set bot avatar: {e}")
 
     def setup_event_handlers(self) -> None:
         """Set up Discord event handlers with diagnostics."""
@@ -127,6 +166,10 @@ class DiscordListener:
         async def on_ready():
             logger.info(f"Logged in as: {self.client.user} (ID: {self.client.user.id})")
             logger.info(f"Connected guilds: {[f'{g.name} ({g.id})' for g in self.client.guilds]}")
+            
+            # Try to set avatar if not already set
+            await self.set_bot_avatar_if_needed()
+            
             # Log all text channels the bot can see in the relevant guild
             for guild in self.client.guilds:
                 if guild.id == self.config.DISCORD_SERVER_ID:

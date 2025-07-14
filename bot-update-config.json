@@ -1,0 +1,17 @@
+{
+  "ImageRepository": {
+    "ImageIdentifier": "335561736978.dkr.ecr.eu-west-3.amazonaws.com/eli5-discord-bot-bot-dev:latest",
+    "ImageRepositoryType": "ECR",
+    "ImageConfiguration": {
+      "RuntimeEnvironmentVariables": {
+        "DISCORD_BOT_TOKEN": "MTM4NjQ2Njk4MzI3NjU3Njg3MA.GRsps_.YnIaVZp24DGg6Kmb-Z6nQaC2ajg8fwVDQxPhXM",
+        "DISCORD_CHANNEL_ID": "1386452379733594145",
+        "DISCORD_SERVER_ID": "1386452379733594142",
+        "TARGET_USER_ID": "1386466983276576870",
+        "ENVIRONMENT": "dev"
+      },
+      "Port": "8000",
+      "StartCommand": "python src/discord_bot_simple.py"
+    }
+  }
+}

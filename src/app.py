@@ -14,7 +14,10 @@ import torch
 import mlflow
 import mlflow.sklearn
 from mlflow.tracking import MlflowClient
-from .model_loader import get_model, get_tokenizer
+try:
+    from .model_loader import get_model, get_tokenizer
+except ImportError:
+    from model_loader import get_model, get_tokenizer
 
 # Load environment variables
 load_dotenv()
@@ -33,9 +36,22 @@ class ConfigLoader:
     def load_config(config_path: str = "config/config.yml") -> Dict[str, Any]:
         """Load configuration from YAML file."""
         try:
-            with open(config_path, 'r') as f:
-                config = yaml.safe_load(f)
-            return config
+            # Try the provided path first
+            if os.path.exists(config_path):
+                with open(config_path, 'r') as f:
+                    config = yaml.safe_load(f)
+                return config
+            
+            # If not found, try relative to parent directory
+            parent_config_path = os.path.join("..", config_path)
+            if os.path.exists(parent_config_path):
+                with open(parent_config_path, 'r') as f:
+                    config = yaml.safe_load(f)
+                return config
+            
+            # If still not found, raise the original error
+            raise FileNotFoundError(f"Configuration file not found at {config_path} or {parent_config_path}")
+            
         except Exception as e:
             print(f"Error loading configuration from {config_path}: {e}")
             print("Using default configuration")
@@ -126,11 +142,16 @@ class DatasetLoader:
     def _load_dataset(self) -> None:
         """Load examples from the dataset file."""
         try:
-            if not os.path.exists(self.dataset_path):
-                logger.warning(f"Dataset file not found: {self.dataset_path}")
-                return
+            # Try the provided path first
+            dataset_path = self.dataset_path
+            if not os.path.exists(dataset_path):
+                # If not found, try relative to parent directory
+                dataset_path = os.path.join("..", self.dataset_path)
+                if not os.path.exists(dataset_path):
+                    logger.warning(f"Dataset file not found: {self.dataset_path} or {dataset_path}")
+                    return
                 
-            with open(self.dataset_path, 'r', newline='', encoding='utf-8') as f:
+            with open(dataset_path, 'r', newline='', encoding='utf-8') as f:
                 reader = csv.DictReader(f)
                 for row in reader:
                     if 'term' in row and 'explanation' in row:

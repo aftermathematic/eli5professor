@@ -8,7 +8,7 @@ module "discord_bot_service" {
   source           = "./modules/apprunner-service"
   service_name     = "${var.app_name}-discord-bot-${var.environment}"
   # The image_identifier is not used since we're using a placeholder image in the module
-  image_identifier = "${module.app_repository.repository_url}:latest"
+  image_identifier = "${module.bot_repository.repository_url}:latest"
   port             = 8000
   environment_variables = {
     ENVIRONMENT = var.environment
@@ -29,7 +29,7 @@ module "api_service" {
   source           = "./modules/apprunner-service"
   service_name     = "${var.app_name}-api-${var.environment}"
   # The image_identifier is not used since we're using a placeholder image in the module
-  image_identifier = "${module.app_repository.repository_url}:latest"
+  image_identifier = "${module.api_repository.repository_url}:latest"
   port             = 8000
   environment_variables = {
     ENVIRONMENT = var.environment

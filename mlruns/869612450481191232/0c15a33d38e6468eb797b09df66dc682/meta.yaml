@@ -1,0 +1,14 @@
+artifact_uri: file:///C:/Users/vermeerbergenj/OneDrive - delaware/Documents/EHB/Postgraduaat/MLOPS/eli5professor/mlruns/869612450481191232/0c15a33d38e6468eb797b09df66dc682/artifacts
+end_time: 1752498296517
+entry_point_name: ''
+experiment_id: '869612450481191232'
+lifecycle_stage: active
+run_id: 0c15a33d38e6468eb797b09df66dc682
+run_name: fortunate-gnat-868
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1752498296332
+status: 3
+tags: []
+user_id: vermeerbergenj

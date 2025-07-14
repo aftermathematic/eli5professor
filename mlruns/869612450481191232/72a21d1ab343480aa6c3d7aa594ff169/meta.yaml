@@ -1,0 +1,14 @@
+artifact_uri: file:///C:/Users/vermeerbergenj/OneDrive - delaware/Documents/EHB/Postgraduaat/MLOPS/eli5professor/mlruns/869612450481191232/72a21d1ab343480aa6c3d7aa594ff169/artifacts
+end_time: 1752496987166
+entry_point_name: ''
+experiment_id: '869612450481191232'
+lifecycle_stage: active
+run_id: 72a21d1ab343480aa6c3d7aa594ff169
+run_name: redolent-pig-317
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1752496986964
+status: 3
+tags: []
+user_id: vermeerbergenj

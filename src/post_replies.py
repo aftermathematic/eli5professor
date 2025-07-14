@@ -27,11 +27,12 @@ class Config:
     """Configuration class for the post replies script."""
     def __init__(self):
         self.MENTIONS_CSV = 'mentions.csv'
-        self.ELI5_API_URL = 'http://localhost:8000/explain'
+        # Use environment variable for API URL, fallback to deployed service
+        self.ELI5_API_URL = os.getenv('ELI5_API_URL', 'https://8friecshgc.eu-west-3.awsapprunner.com/explain')
         self.NUM_MENTIONS = 10    # 10 mentions per batch
         self.WAIT_MINUTES = 1     # 1 minute wait between batches
         self.TWITTER_ACCOUNT_HANDLE = 'eli5professor'
-        self.DISCORD_WEBHOOK_URL = 'https://discord.com/api/webhooks/1386452801143705751/1U-yOwx8soK57EwEOMUBAD09fTFHEvWTmV9WKGpmXFnXgBgyspBaZuxK_fzI4Ub9AYXY'
+        self.DISCORD_WEBHOOK_URL = os.getenv('DISCORD_WEBHOOK_URL', 'https://discord.com/api/webhooks/1386452801143705751/1U-yOwx8soK57EwEOMUBAD09fTFHEvWTmV9WKGpmXFnXgBgyspBaZuxK_fzI4Ub9AYXY')
 
 class MentionProcessor:
     """Class to process mentions and extract topics."""

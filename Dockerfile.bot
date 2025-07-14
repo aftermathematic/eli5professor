@@ -2,22 +2,15 @@ FROM python:3.10-slim AS builder
 
 WORKDIR /app
 
-# Install dependencies
+# Install dependencies (Discord bot only needs basic packages)
 COPY requirements.txt .
 RUN pip install --no-cache-dir --target=/app/deps \
     fastapi \
     uvicorn[standard] \
     pydantic \
     python-dotenv \
-    openai \
-    transformers \
-    pyyaml \
     requests \
-    discord.py \
-    mlflow \
-    pandas \
-    scikit-learn && \
-    pip install --no-cache-dir --target=/app/deps torch --index-url https://download.pytorch.org/whl/cpu
+    discord.py
 
 # Use a smaller base image for the final stage
 FROM python:3.10-slim
@@ -60,5 +53,5 @@ ENV LAST_SEEN_FILE=/app/data/last_seen_id.txt
 # Expose port 8000 for health checks
 EXPOSE 8000
 
-# Default command to run the Discord bot with health check
-CMD ["python", "src/discord_bot_with_health.py"]
+# Default command to run the simple Discord bot
+CMD ["python", "src/discord_bot_simple.py"]
