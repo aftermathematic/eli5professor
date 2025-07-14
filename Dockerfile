@@ -37,10 +37,8 @@ COPY data/ /app/data/
 # Create volume mount point for persistent data
 VOLUME /app/data
 
-# Copy dataset files to the volume mount point
+# Ensure data directory exists
 RUN mkdir -p /app/data
-COPY data/dataset.csv /app/data/dataset.csv
-COPY data/eli5_dataset.csv /app/data/eli5_dataset.csv
 
 # Set environment variables
 ENV PYTHONUNBUFFERED=1
