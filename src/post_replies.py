@@ -43,8 +43,32 @@ class Config:
         # First try environment variable (for local development)
         webhook_url = os.getenv('DISCORD_WEBHOOK_URL')
         if webhook_url:
-            logger.info("Using Discord webhook URL from environment variable")
-            return webhook_url
+            # Check if the environment variable contains a secret reference
+            if webhook_url.startswith('eli5-discord-bot/discord-credentials-dev:'):
+                logger.info("Environment variable contains AWS Secrets Manager reference, resolving...")
+                secret_key = webhook_url.split(':')[1]  # Extract the key after the colon
+                try:
+                    session = boto3.Session()
+                    secrets_client = session.client('secretsmanager', region_name='eu-west-3')
+                    
+                    response = secrets_client.get_secret_value(
+                        SecretId='eli5-discord-bot/discord-credentials-dev'
+                    )
+                    
+                    credentials = json.loads(response['SecretString'])
+                    resolved_value = credentials.get(secret_key)
+                    
+                    if resolved_value:
+                        logger.info(f"✅ Successfully resolved {secret_key} from AWS Secrets Manager")
+                        return resolved_value
+                    else:
+                        logger.error(f"Key {secret_key} not found in secrets")
+                        
+                except Exception as e:
+                    logger.error(f"Error resolving secret reference: {e}")
+            else:
+                logger.info("Using Discord webhook URL from environment variable")
+                return webhook_url
             
         # Try to get from AWS Secrets Manager
         try:
@@ -58,21 +82,18 @@ class Config:
             
             credentials = json.loads(response['SecretString'])
             
-            # Get Discord channel and server info to construct webhook URL
-            channel_id = credentials.get('DISCORD_CHANNEL_ID')
-            
-            # For now, use the hardcoded webhook URL as fallback
-            # In a production setup, you'd store the webhook URL in secrets too
-            webhook_url = 'https://discord.com/api/webhooks/1386452801143705751/1U-yOwx8soK57EwEOMUBAD09fTFHEvWTmV9WKGpmXFnXgBgyspBaZuxK_fzI4Ub9AYXY'
-            
-            logger.info("✅ Successfully loaded Discord credentials from AWS Secrets Manager")
-            return webhook_url
+            # Get Discord webhook URL from secrets
+            webhook_url = credentials.get('DISCORD_WEBHOOK_URL')
+            if webhook_url:
+                logger.info("✅ Successfully loaded Discord webhook URL from AWS Secrets Manager")
+                return webhook_url
             
         except Exception as e:
             logger.warning(f"Could not load from AWS Secrets Manager: {e}")
-            # Fallback to hardcoded webhook URL
-            logger.info("Using fallback Discord webhook URL")
-            return 'https://discord.com/api/webhooks/1386452801143705751/1U-yOwx8soK57EwEOMUBAD09fTFHEvWTmV9WKGpmXFnXgBgyspBaZuxK_fzI4Ub9AYXY'
+            
+        # Fallback to hardcoded webhook URL
+        logger.info("Using fallback Discord webhook URL")
+        return 'https://discord.com/api/webhooks/1386452801143705751/1U-yOwx8soK57EwEOMUBAD09fTFHEvWTmV9WKGpmXFnXgBgyspBaZuxK_fzI4Ub9AYXY'
 
 class MentionProcessor:
     """Class to process mentions and extract topics."""
